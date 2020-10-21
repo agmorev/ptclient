@@ -1,0 +1,16 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ title }} | {% trans "ПЕНТАДА | Клієнт" %}{% endblock %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static "dist/css/admin_color.css" %}"/>
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name">
+        <img src="{% static 'dist/img/logo_full_small.png' %}" alt='ПТ "ПЕНТАДА-ТРАНС"' width=100px/>
+    </h1>
+    
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
