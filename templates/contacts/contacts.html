@@ -1,0 +1,100 @@
+<!-- templates/contacts/contacts.html -->
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block pageheader %}
+    {% trans "Контакти" %}
+{% endblock pageheader %}
+
+{% block breadcrumb %}
+    <li class="active">{% trans "Контакти" %}</li>
+{% endblock breadcrumb %}
+
+{% block content %}
+
+    <div class="box box-warning">
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-7">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2538.6117731415034!2d30.48639041577399!3d50.48557077948027!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40d4cde4c5665971%3A0x2b4c6bae44045038!2z0YPQuy4g0JLQuNC60LXQvdGC0LjRjyDQpdCy0L7QudC60LgsIDIxLCDQmtC40LXQsiwgMDIwMDA!5e0!3m2!1sru!2sua!4v1616279254128!5m2!1sru!2sua" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+    
+                <div class="col-md-5 text-center d-flex align-items-center justify-content-center">
+                    <div class="">
+                        <img src={% static "dist/img/logo_full_small.png" %}> 
+                        <h2>{% trans 'ПОВНЕ ТОВАРИСТВО "ПЕНТАДА ТРАНС" ТОВ «ПЕНТАДА ГРУПП» І КОМПАНІЯ' %}</h2>
+                        <p class="lead mb-5">{% trans "04080, м. Київ, вул. Хвойки Вікентія, 21, офіс 360" %}</p>
+                        
+                            <p>{% trans "Оформлення фінансових гарантій (24/7):" %}</p>
+                            <p><a href="tel:+380674476066"><i class="fa fa-lg fa-phone"></i> +38 (067) 447 60 66 ({% trans "оператори" %})</a></p>
+                            <p><a href="mailto:zayavka_gd@pentada-trans.com"><i class="fa fa-lg fa-envelope"></i> zayavka_gd@pentada-trans.com</a></p>
+                            <p>{% trans "Інші питання:" %}</p>
+                            <p><a href="tel:+380674769780"><i class="fa fa-lg fa-phone"></i> +38 (067) 476 97 80</a></p>
+                            <p><a href="tel:+380674769791"><i class="fa fa-lg fa-phone"></i> +38 (067) 476 97 91</a></p>
+                            <p><a href="tel:+380673213665"><i class="fa fa-lg fa-phone"></i> +38 (067) 321 36 65</a></p>
+                            <p><a href="mailto:office@pentada-trans.com"><i class="fa fa-lg fa-envelope"></i> office@pentada-trans.com</a></p>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="row d-flex align-items-stretch">
+        {% for object in contacts %}    
+            <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
+                <div class="box box-warning">
+                    <div class="box-header text-muted border-bottom-0">
+                        <h3 class="box-title">{{ object.employee_position }}</h3>
+                    </div>
+                    <div class="box-body pt-0">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <h4 class=""><b>{{ object.employee_name }} {{ object.employee_lastname }}</b></h4>
+                                <ul class="ml-4 mb-0 fa-ul text-muted">
+                                    <li class="small">
+                                        <span class="fa-li">
+                                            <i class="fa fa-lg fa-building"></i>
+                                        </span>
+                                        {% trans "Адреса:" %} {{ object.employee_address }}
+                                    </li>
+                                    <li class="small">
+                                        <span class="fa-li">
+                                            <i class="fa fa-lg fa-phone"></i>
+                                        </span>
+                                        {% trans "Телефон:" %}
+                                        <a href="tel:{{ object.employee_phone }}"> {{ object.employee_phone }}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-5 text-center">
+                                <div class='widget-user-image'>
+                                    {% if object.employee_image %}
+                                        <img src="{{ object.employee_image.url }}" alt="User-avatar" class="profile-user-img img-responsive img-circle">
+                                    {% else %}
+                                        <img src="{% static 'dist/img/avatar.png' %}" class="profile-user-img img-responsive img-circle" alt="Default Avatar">
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <div class="text-right">
+                            <a onClick="javascript:window.open('mailto:{{ object.employee_email }}', 'mail');event.preventDefault()" href="mailto:{{ object.employee_email }}" target="_blank" class="btn btn-sm bg-teal">
+                                <i class="fa fa-comments"></i>
+                            </a>
+                            <a href="{% url 'profile' pk=object.pk %}" class="btn btn-sm btn-success">
+                                <i class="fa fa-user"></i> {% trans "Профіль" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

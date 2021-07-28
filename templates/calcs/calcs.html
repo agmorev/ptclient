@@ -1,0 +1,212 @@
+<!-- templates/flatpages/calcs.html -->
+{% extends 'base.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block pageheader %}
+  {% trans "Калькулятори" %}
+{% endblock pageheader %}
+                  
+{% block content %}
+
+	<div class="box box-solid">
+		<div class="box-header with-border">
+			<h3 class="box-title">{% trans "Оберіть калькулятор для розрахунку" %}</h3>
+		</div>
+		<!-- /.box-header -->
+		<div class="box-body">
+			<div class="box-group" id="accordion">
+				<!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+				<div class="panel box box-primary">
+					<div class="box-header with-border">
+					<h4 class="box-title">
+						<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" class="collapsed">
+							{% trans "Калькулятор митної вартості та митних платежів при митному оформленні автомобіля || Державна митна служба України" %}
+						</a>
+					</h4>
+					</div>
+					<div id="collapseOne" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+					<div class="box-body">
+						<iframe src="https://calc.customs.gov.ua/" marginwidth="0" marginheight="0" width="100%" height="1000px" frameborder="0"></iframe>
+					</div>
+					</div>
+				</div>
+				<div class="panel box box-danger">
+					<div class="box-header with-border">
+					<h4 class="box-title">
+						<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="collapsed" aria-expanded="false">
+							{% trans "Розрахунок митних платежів || НПО Поверхность МД" %}
+						</a>
+					</h4>
+					</div>
+					<div id="collapseTwo" class="panel-collapse collapse" aria-expanded="false">
+					<div class="box-body">
+						<iframe src="https://www.mdoffice.com.ua/ua/pls/MDOffice/payacc.html" marginwidth="0" marginheight="0" width="100%" height="400px" frameborder="0"></iframe>
+					</div>
+					</div>
+				</div>
+				<div class="panel box box-success">
+					<div class="box-header with-border">
+					<h4 class="box-title">
+						<a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" class="collapsed" aria-expanded="false">
+							{% trans "Розрахунок митних платежів на легковий автомобіль || НПО Поверхность МД" %}
+						</a>
+					</h4>
+					</div>
+					<div id="collapseThree" class="panel-collapse collapse" aria-expanded="false">
+					<div class="box-body">
+						<!--Mdoffice.com.ua -->
+						<iframe 
+						src="https://www.mdoffice.com.ua/ua/pls/MDOffice/auto.html" marginwidth="100" marginheight="0" width="100%" height="400px" frameborder="0"></iframe> 
+						<!--//Mdoffice.com.ua-->
+					</div>
+					</div>
+				</div>
+				<div class="panel box box-warning">
+					<div class="box-header with-border">
+					<h4 class="box-title">
+						<a data-toggle="collapse" data-parent="#accordion" href="#collapseFour" class="collapsed" aria-expanded="false">
+							{% trans "Розрахунок митних платежів || НТФ Інтес" %}
+						</a>
+					</h4>
+					</div>
+					<div id="collapseFour" class="panel-collapse collapse" aria-expanded="false">
+						<div class="box-body">
+							<iframe marginheight="0" marginwidth="0" seamless="" src="http://qdpro.com.ua/uk/export/calc" width="100%" height="300px" frameborder="0"></iframe>
+						</div>
+					</div>
+				</div>
+				<div class="panel box box-info">
+					<div class="box-header with-border">
+					<h4 class="box-title">
+						<a data-toggle="collapse" data-parent="#accordion" href="#collapseFour" class="collapsed" aria-expanded="false">
+							{% trans "Розрахунок митних платежів при імпорті легкових автомобілів || НТФ Інтес" %}
+						</a>
+					</h4>
+					</div>
+					<div id="collapseFour" class="panel-collapse collapse" aria-expanded="false">
+						<div class="box-body">
+							<iframe marginheight="0" marginwidth="0" seamless="" src="http://qdpro.com.ua/uk/export/calc/cars" width="100%" height="300px" frameborder="0"></iframe>
+						</div>
+					</div>
+				</div>
+				<div class="panel box box-primary">
+					<div class="box-header with-border">
+					<h4 class="box-title">
+						<a data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" class="collapsed">
+							{% trans "Калькулятор розрахунку вартості фінансової гарантії || ПТ 'ПЕНТАДА ТРАНС'" %}
+						</a>
+					</h4>
+					</div>
+					<div id="collapseFive" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+					<div class="box-body">
+						<iframe src="https://calc.customs.gov.ua/" marginwidth="0" marginheight="0" width="100%" height="1000px" frameborder="0"></iframe>
+					</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /.box-body -->
+	</div>
+
+
+
+
+
+
+
+    {% comment %} <div class="card">
+		<div class="card-header">
+			<h3 class="card-title">
+				{% trans "Калькулятор митної вартості та митних платежів при митному оформленні автомобіля || Державна митна служба України" %}
+			</h3>
+			<div class="card-tools">
+				<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="collapse" data-target="#collapseCalcSCSU" aria-expanded="true" aria-controls="collapseCalcSCSU"></button>
+			</div>
+		</div>		
+		<div class="accordion" id="accordionCalcSCSU">
+			<div id="collapseCalcSCSU" class="collapse" aria-labelledby="headingReply" data-parent="#accordionCalcSCSU">	
+				<div class="card-body">			
+					<iframe src="https://calc.customs.gov.ua/" marginwidth="0" marginheight="0" width="100%" height="1000px" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+    
+	<div class="card">
+		<div class="card-header">
+			<h3 class="card-title">
+				{% trans "Розрахунок митних платежів || НПО Поверхность МД" %}
+			</h3>
+			<div class="card-tools">
+				<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="collapse" data-target="#collapseCalcPayMDOffice" aria-expanded="true" aria-controls="collapseCalcPayMDOffice"></button>
+			</div>
+		</div>		
+		<div class="accordion" id="accordionCalcPayMDOffice">
+			<div id="collapseCalcPayMDOffice" class="collapse" aria-labelledby="headingReply" data-parent="#accordionCalcPayMDOffice">	
+				<div class="card-body">			
+					<iframe src="https://www.mdoffice.com.ua/pls/MDOffice/payacc.html" marginwidth="0" marginheight="0" width="100%" height="400px" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="card">
+		<div class="card-header">
+			<h3 class="card-title">
+				{% trans "Розрахунок митних платежів на легковий автомобіль || НПО Поверхность МД" %}
+			</h3>
+			<div class="card-tools">
+				<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="collapse" data-target="#collapseCalcCarMDOffice" aria-expanded="true" aria-controls="collapseCalcCarMDOffice"></button>
+			</div>
+		</div>		
+		<div class="accordion" id="accordionCalcCarMDOffice">
+			<div id="collapseCalcCarMDOffice" class="collapse" aria-labelledby="headingReply" data-parent="#accordionCalcCarMDOffice">	
+				<div class="card-body">			
+					<!--Mdoffice.com.ua -->
+					<iframe 
+					src="https://www.mdoffice.com.ua/pls/MDOffice/auto.html" marginwidth="100" marginheight="0" width="100%" height="400px" frameborder="0"></iframe> 
+					<!--//Mdoffice.com.ua-->
+				</div>
+			</div>
+		</div>
+	</div>
+    
+    <div class="card">
+		<div class="card-header">
+			<h3 class="card-title">
+				{% trans "Розрахунок митних платежів || НТФ Інтес" %}
+			</h3>
+			<div class="card-tools">
+				<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="collapse" data-target="#collapseCalcPayIntes" aria-expanded="true" aria-controls="collapseCalcPayIntes"></button>
+			</div>
+		</div>		
+		<div class="accordion" id="accordionCalcPayIntes">
+			<div id="collapseCalcPayIntes" class="collapse" aria-labelledby="headingReply" data-parent="#accordionCalcPayIntes">	
+				<div class="card-body">			
+					<iframe marginheight="0" marginwidth="0" seamless="" src="http://qdpro.com.ua/export/calc" width="100%" height="300px" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="card-header">
+			<h3 class="card-title">
+				{% trans "Розрахунок митних платежів при імпорті легкових автомобілів || НТФ Інтес" %}
+			</h3>
+			<div class="card-tools">
+				<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="collapse" data-target="#collapseCalcCarIntes" aria-expanded="true" aria-controls="collapseCalcCarIntes"></button>
+			</div>
+		</div>		
+		<div class="accordion" id="accordionCalcCarIntes">
+			<div id="collapseCalcCarIntes" class="collapse" aria-labelledby="headingReply" data-parent="#accordionCalcCarIntes">	
+				<div class="card-body">			
+					<iframe marginheight="0" marginwidth="0" seamless="" src="http://qdpro.com.ua/export/calc/cars" width="100%" height="300px" frameborder="0"></iframe>
+				</div>
+			</div>
+		</div>
+	</div> {% endcomment %}
+
+{% endblock %}

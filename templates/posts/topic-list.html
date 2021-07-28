@@ -1,0 +1,178 @@
+<!-- templates/posts/topic-list.html -->
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block CSS %}
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+    <style>
+        @media only screen and (max-width: 900px) {
+            .one{
+                display: none;
+            }
+        }
+    </style>
+{% endblock CSS %}
+
+{% block head %}
+    {{ form.media }}
+{% endblock head %}
+
+{% block pageheader %}
+    {% trans "Форум" %}
+{% endblock pageheader %}
+
+{% block breadcrumb %}
+    <li class="active">{% trans "Форум" %}</li>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="box box-success">
+        <div class="box-header">
+            <i class="fa fa-comments-o"></i>
+            <h3 class="box-title">{% trans 'Теми для обговорення' %}</h3>
+            <div class="box-tools pull-right">
+                <a class="btn btn-sm"
+                    href="{% url 'topic_list' %}"
+                    role="button"
+                    title={% trans 'Оновити' %}>
+                    <i class="fa fa-refresh"></i>
+                </a>
+                <a class="btn btn-sm"
+                    href="{% url 'topic_new' %}"
+                    role="button"
+                    title={% trans 'Створити' %}>
+                    <i class="fa fa-plus"></i>
+                </a>
+            </div>
+        </div>
+        <div class="box-body table-responsive">
+            <table id="example2" class="table table-bordered table-hover table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th class="one"></th>
+                        <th>{% trans "Назва" %}</th>
+                        <th class="one">{% trans "Автор" %}</th>
+                        <th class="one">{% trans "Створено" %}</th>
+                        <th class="one">{% trans "Редаговано" %}</th>
+                        <th class="one">{% trans "Закрито" %}</th>
+                        <th>{% trans "Дія" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for topic in object_list %}
+                        <tr>                           
+                            <td class="one">                            
+                                {% if topic.image %}
+                                    <img src="{{ topic.image.url }}" class="img-circle img-md" alt="">
+                                {% else %}
+                                    <img src="{% static 'dist/img/theme.png' %}" class="img-circle img-md">
+                                {% endif %}                            
+                            </td>
+                            <td>
+                                <ul class="products-list product-list-in-box">
+                                    <li class="item" style="background:None">
+                                        <div clss="product-info">                        
+                                            <a href="{{ topic.get_absolute_url }}" class="product-title">{{ topic.title }}</a>
+                                            <span class="product-description">
+                                                {{ topic.description }}
+                                            </span>
+                                        </div>
+                                    </li>
+                                </ul>                                
+                            </td>
+                            <td class="one">
+                                {% with user=topic.author %}
+                                    {% if user.image %}
+                                        <img src="{{ user.image.url }}" 
+                                            class="img-circle img-sm" 
+                                            title="{{ user.get_full_name }}">
+                                    {% else %}
+                                        {% if topic.author is not None %}
+                                            <img src="{% static 'dist/img/avatar.png' %}" 
+                                                class="img-circle img-sm"
+                                                title="{{ user.get_full_name }}">
+                                        {% else %} 
+                                            <img src="{% static 'dist/img/guest.png' %}" 
+                                                class="img-circle img-sm"
+                                                title="{% trans 'Гість' %}">
+                                        {% endif %}
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td class="one">{{ topic.created|date:"d.m.Y H:i" }}</td>
+                            <td class="one">{{ topic.updated|date:"d.m.Y H:i" }}</td>
+                            <td class="one">
+                                {% if topic.closed == True %}
+                                    <i class="fa fa-check-circle-o fa-lg"></i>
+                                {% else %}
+                                    <i class="fa fa-circle-o fa-lg"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">                                    
+                                    <a class="btn btn-info btn-sm"
+                                        href="{{ topic.get_absolute_url }}"
+                                        role="button"
+                                        title={% trans 'Публікації' %}>
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    {% if user.is_authenticated and user.username == topic.author.username %}
+                                        <a class="btn btn-success btn-sm"
+                                            href="{% url 'topic_edit' topic.pk %}"
+                                            role="button"
+                                            title={% trans 'Редагувати' %}>
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        <a class="btn btn-danger btn-sm"
+                                            href="{% url 'topic_delete' topic.pk %}"
+                                            role="button"
+                                            title={% trans 'Видалити' %}>
+                                            <i class="fa fa-trash"></i>
+                                        </a>                                    
+                                    {% endif %}
+                                </div>                                
+                            </td>                            
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block JS %}
+    <!-- DataTable -->
+    <script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#example2').DataTable({
+                'language': {
+                    "lengthMenu": "Відобразити _MENU_ записів на сторінку",
+                    "zeroRecords": "Нічого не знайдено - вибачте",
+                    "info": "Сторінка _PAGE_ з _PAGES_",
+                    "infoEmpty": "Записи відсутні",
+                    "infoFiltered": "(відфільтровано з _MAX_ записів)",
+                    "search": "Пошук:",
+                    "paginate": {
+                        "first":      "Перша",
+                        "last":       "Остання",
+                        "next":       "Наступна",
+                        "previous":   "Попередня"
+                    },
+                },
+                'paging'      : true,
+                'lengthChange': true,
+                'searching'   : true,
+                'ordering'    : true,
+                'info'        : true,
+                'autoWidth'   : false,               
+            })
+        })
+    </script>
+{% endblock JS %}

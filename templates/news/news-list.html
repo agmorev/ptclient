@@ -1,0 +1,89 @@
+<!-- templates/news/news-list.html -->
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block head %}
+    {{ form.media }}
+{% endblock head %}
+
+{% block pageheader %}
+    {% trans "Новини" %}
+{% endblock pageheader %}
+
+{% block breadcrumb %}
+    <li class="active">{% trans "Новини" %}</li>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="box box-primary">
+        <div class="box-header">
+            <h3 class="box-title">{% trans 'Останні митні новини' %}</h3>
+        </div>
+        <div class="box-body">
+            {% for new in object_list %}               
+                <ul class="products-list product-list-in-box">
+                    <li class="item">
+                        <div class="product-img">
+                            {% if new.5 %}
+                                <img src="{{ new.5 }}" alt="Post Image">
+                            {% else %}
+                                <img src="{% static 'dist/img/news.png' %}" alt="Post Image">
+                            {% endif %}
+                        </div>
+                        <div class="product-info">
+                            <a class="product-title" href="{{ new.3 }}" target="_blank">
+                                {{ new.1|safe }} 
+                            </a>
+                            <span class="product-description">{{ new.0|safe }}|{{ new.4 }}</span>
+                        </div>
+                    </li>
+                </ul>
+            {% endfor %}
+            {% if is_paginated %}
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a  class="page-link"
+                                    href="{{ request.path }}?page={{ page_obj.previous_page_number }}"
+                                    aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% for page in page_obj.paginator.page_range %}
+                            {% if page_obj.number == page %}
+                                <li class="page-item active" aria-current="page">
+                                    <span   class="page-link"
+                                            style=" background-color: light-blue; 
+                                                    border-color: light-blue;">
+                                            {{ page }}
+                                        <span class="sr-only">(current)</span>
+                                    </span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a  class="page-link"
+                                    href="{{ request.path }}?page={{ page_obj.next_page_number }}"
+                                    aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

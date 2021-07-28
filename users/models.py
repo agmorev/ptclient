@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import ugettext_lazy as _
 
 class User(AbstractUser):
@@ -13,6 +14,8 @@ class User(AbstractUser):
         max_length=255,
         null=True,
         blank=True)
+    phone = PhoneNumberField(
+        _('контактний телефон'))
     company_name = models.CharField(
         _('назва компанії'),
         max_length=255,
@@ -32,7 +35,11 @@ class User(AbstractUser):
         _('адреса'),
         max_length=255,
         null=True,
-        blank=True) 
+        blank=True)
+
+    class Meta:
+        verbose_name = _('користувач')
+        verbose_name_plural = _('користувачі')
 
     def __str__(self):
         if self.get_full_name():

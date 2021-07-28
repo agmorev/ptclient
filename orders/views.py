@@ -14,7 +14,7 @@ from django.views.generic.edit import FormMixin
 # from django_filters.views import FilterView
 from django.contrib.messages.views import SuccessMessageMixin
 from .models import Order
-# from .forms import TopicForm, PostForm, CommentForm
+from .forms import OrderForm
 # from .filters import TopicFilter, PostFilter
 from django.utils.translation import ugettext_lazy as _
 
@@ -33,8 +33,8 @@ class OrderListView(ListView):
 class OrderCreateView(SuccessMessageMixin, CreateView):
     """Creating of a new order"""
     model = Order
-    # form_class = PostForm
-    # form = None
+    form_class = OrderForm
+    form = None
     template_name = 'orders/order_create.html'
     success_message = _('Заявку успішно створено')
 
@@ -42,7 +42,7 @@ class OrderCreateView(SuccessMessageMixin, CreateView):
 class OrderUpdateView(SuccessMessageMixin, UpdateView):
     """Updating of an existing order"""
     model = Order
-    # form_class = PostForm
+    form_class = OrderForm
     template_name = 'orders/order_update.html'
     success_message = _('Заявку успішно виправлено')
 
@@ -63,4 +63,4 @@ class OrderDeleteView(SuccessMessageMixin, DeleteView):
     success_message = _('Заявку успішно видалено')
 
     def get_success_url(self):
-        return reverse('post_list')
+        return reverse('order_list')

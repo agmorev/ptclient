@@ -1,102 +1,87 @@
-<!-- templates/post-new.html -->
+<!-- templates/order/order_create.html -->
 
 {% extends 'base.html' %}
 
 {% load static %}
 {% load i18n %}
-{% load widget_tweaks %}
+{% load crispy_forms_tags %}
 
-{% block head %}
-    {{ form.media }}
-{% endblock head %}
+{% block pageheader %}
+    {% trans "Заявки" %}
+{% endblock pageheader %}
+
+{% block breadcrumb %}
+    <li class="">{% trans "Заявки" %}</li>
+    <li class="active">{% trans "Створення" %}</li>
+{% endblock breadcrumb %}
 
 {% block content %}
-    <div class="card mt-2">
-        <div class="card-header py-0 px-3 text-white bg-dark">
-            <h3>{% trans 'Форум' %}</h3>
+    <div class="box box-success">
+        <div class="box-header">
+            <i class="fa fa-file-text-o"></i>
+            <h3 class="box-title">{% trans "Нова заявка" %}</h3>
+            <div class="box-tools pull-right" data-toggle="tooltip" title="">
+                <div class="btn-group">
+                    <a class="btn btn-warning"
+                        href="{% url 'order_list' %}"
+                        title={% trans 'Перелік' %}>
+                        <i class="fa fa-list"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="card-body p-1">
-            <h4 class="pl-3">{% trans 'Новая публикация' %}</h4>
-            <hr>
+        <div class="box-body">
+            <div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h3><i class="fa fa-exclamation-triangle"></i> {% trans "Увага" %}!</h3>
+                <p> 
+                    {% blocktrans %}
+                        Частина відомостей про клієнта та учасників переміщення, необхідні для 
+                        заповнення заявки, будуть завантажуватися автоматично.
+                    {% endblocktrans %}
+                </p>
+            </div>
+            <div>
+                <h4 class='text-center'><b>{% trans "ЗАЯВКА" %}</b></h4>
+                <h5 class='text-center'><b>{% trans "до Договору про надання послуг з видачі фінансових гарантій" %}</b></h4></h5>
+                <h5 class='text-center'> 
+                    {% blocktrans %}
+                        ГАРАНТ: Незалежний фінансовий посередник - ПТ "ПЕНТАДА ТРАНС 
+                        (код ЄДРПОУ 36701373, адреса: 04073, м. Київ, вул. Вікентія Хвойки, 
+                        будинок 21, офіс 360, контактні дані +38 (067) 447 60 66
+                    {% endblocktrans %}
+                </h5>
+            </div>
             <div class="form-group">
-                <form enctype="multipart/form-data" method="post">
+                <form method='post'>
                     {% csrf_token %}
-                    {% for hidden in form.hidden_fields %}
-                        {{ hidden }}
-                    {% endfor %}
-                    <div class="form-group">
-                        <div class="form-label-group">
-                            <b>{{ form.title.label_tag }}</b>
-                            <p>{{ form.title|add_class:'form-control' }}</p>
-                            {% if form.title.help_text %}
-                                <small class='form-text text-muted'>{{ form.title.help_text }}</small>
-                            {% endif %}
-                            {% if form.preview.error %}
-                                {% for error in form.title.errors %}
-                                    <span class="form-text text-danger"><small>{{ error }}</small></span>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
+                    {% crispy form %}
+                    
+                    
+                    {% comment %} {{ goods.management_form|crispy }}
+                        
+                    <div id='form_set'>
+                        {% for item in goods.forms %}
+                            {{ item.non_field_errors }}
+                            {{ item.errors }}
+                            <div class='no-error'>                   
+                                {% crispy item %}                         
+                            </div>                                       
+                        {% endfor %}
                     </div>
-                    <hr>
-                    <div class="form-group">
-                        <div class="form-label-group">
-                            <b>{{ form.preview.label_tag }}</b>
-                            <p>{{ form.preview|add_class:'form-control'|attr:'rows:2' }}</p>
-                            {% if form.preview.help_text %}
-                                <small class='form-text text-muted'>{{ form.preview.help_text }}</small>
-                            {% endif %}
-                            {% if form.preview.error %}
-                                {% for error in form.preview.errors %}
-                                    <span class="form-text text-danger"><small>{{ error }}</small></span>
-                                {% endfor %}
-                            {% endif %}
+                    <input type='button' class='btn btn-sm btn-block btn-success' value='{% trans "Додати товар" %}' id='add_more'>
+                    <div id='empty_form' style='display:none'>
+                        <div class='no-error'>
+                            
+                            {% crispy goods.empty_form %}
                         </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-1">
-                            {% if post.image %}
-                                <img src="{{ post.image.url }}" alt="" class="img-thumbnail">
-                            {% else %}
-                                <img src="{% static 'img/publication.jpg' %}" class="img-thumbnail">
-                            {% endif %}
-                        </div>
-                        <div class="col-sm-10">
-                            <div class="form-group">
-                                <div class="form-label-group">
-                                    <b>{{ form.image.label_tag }}</b>
-                                    {{ form.image }}
-                                    {% if form.image.help_text %}
-                                        <small class='form-text text-muted'>{{ form.image.help_text }}</small>
-                                    {% endif %}
-                                    {% if form.image.error %}
-                                        {% for error in form.image.errors %}
-                                            <span class="form-text text-danger"><small>{{ error }}</small></span>
-                                        {% endfor %}
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <div class="form-label-group">
-                            <b>{{ form.content.label_tag }}</b>
-                            <p>{{ form.content|add_class:'form-control' }}</p>
-                            {% if form.content.help_text %}
-                                <small class='form-text text-muted'>{{ form.content.help_text }}</small>
-                            {% endif %}
-                            {% if form.content.error %}
-                                {% for error in form.content.errors %}
-                                    <span class="form-text text-danger"><small>{{ error }}</small></span>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <hr>
-                    <button class="btn btn-success ml-2" type="submit">{% trans 'Сохранить' %}</button>
-                    <a class="btn btn-secondary ml-2" href="{% url 'topic_list' %}">{% trans 'Отменить' %}</a>
+                    </div> {% endcomment %}
+                                            
+                                
+                    <div class="buttonHolder mt-3">
+                        <input type="submit" name="submit" value={% trans "Зберегти" %} class="btn btn-success" id="submit-id-submit">
+                        <a class="btn btn-default" href="">{% trans "Відмінити" %}</a>
+                    </div>                    
                 </form>
             </div>
         </div>

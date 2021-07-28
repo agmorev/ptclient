@@ -26,12 +26,38 @@
                     >
                         <!-- hidden-xs hides the username on small devices so only the image appears. -->
                         <span style="text-transform:uppercase;">
-                            {% trans "вітаємо, " %} {{ user.get_full_name }}
+                            {% trans "вітаємо, " %} {{ user.first_name }}
                             
                         </span>
                     </a>
                 </li>
             
+                {% if user.is_superuser %}
+                    <!-- Site Button -->
+                    <li>
+                        <a href="{% url 'admin:index' %}" title={% trans "Адмінпанель" %}>
+                            <i class="fa fa-gears"></i>
+                        </a>
+                    </li>                
+                {% endif %}
+                
+                <li>
+                    <a href="https://www.facebook.com/pentadatrans" target="_blank" title={% trans "Facebook" %}>
+                        <i class="fa fa-facebook"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://t.me/pentada_bot" target="_blank" title="Telegram-bot">
+                        <i class="fa fa-paper-plane"></i>
+                    </a>
+                </li>
+                <!-- Site Button -->
+                <li>
+                    <a href="https://pentada-trans.com" title="Сайт">
+                        <i class="fa fa-globe"></i>
+                    </a>
+                </li>
+                
                 <!-- Logout Button -->
                 <li>
                     <a href="{% url 'logout' %}" title="Вийти">

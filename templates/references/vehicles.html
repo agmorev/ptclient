@@ -1,0 +1,85 @@
+<!-- templates/references/vehicles.html -->
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block CSS %}
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+{% endblock CSS %}
+
+{% block pageheader %}
+    {% trans "Види транспорту" %}
+{% endblock pageheader %}
+
+{% block breadcrumb %}
+    <li class="active">{% trans "Види транспорту" %}</li>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="box box-success">
+        <div class="box-header">
+            <i class="fa fa-truck"></i>
+            <h3 class="box-title">{% trans "Класифікатор видів транспорту" %}</h3>
+        </div>
+        <div class="box-body">
+            <table id="example2" class="table table-bordered table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>{% trans "Тип транспорту" %}</th>
+                        <th>{% trans "Код типу" %}</th>
+                        <th>{% trans "Код транспорту" %}</th>
+                        <th>{% trans "Назва" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicles %}
+                        <tr>                           
+                            <td>{{ vehicle.vehicle_type }}</td>
+                            <td>{{ vehicle.vehicle_type_code }}</td>
+                            <td>{{ vehicle.vehicle_code }}</td>
+                            <td>{{ vehicle.vehicle_name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block JS %}
+    <!-- DataTable -->
+    <script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#example2').DataTable({
+                'language': {
+                    "lengthMenu": "Відобразити _MENU_ записів на сторінку",
+                    "zeroRecords": "Нічого не знайдено - вибачте",
+                    "info": "Сторінка _PAGE_ з _PAGES_",
+                    "infoEmpty": "Записи відсутні",
+                    "infoFiltered": "(відфільтровано з _MAX_ записів)",
+                    "search": "Пошук:",
+                    "paginate": {
+                        "first":      "Перша",
+                        "last":       "Остання",
+                        "next":       "Наступна",
+                        "previous":   "Попередня"
+                    },
+                },
+                'paging'      : true,
+                'lengthChange': true,
+                'searching'   : true,
+                'ordering'    : true,
+                'info'        : true,
+                'autoWidth'   : false,
+                
+            })
+        })
+    </script>
+{% endblock JS %}
+
+

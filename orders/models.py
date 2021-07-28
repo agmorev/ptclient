@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 from users.models import User
+from references.models import Company, CustomsRegime, VehicleType
+from datetime import datetime
 
 
 class Order(models.Model):
@@ -8,44 +11,75 @@ class Order(models.Model):
         User,
         null=False,
         blank=False,
-        on_delete=models.CASCADE,
+        on_delete=models.DO_NOTHING,
         related_name='user')
     order_number = models.CharField(
         _('номер заявки'),
         max_length=255,
         null=True,
         blank=True)
-    created = models.DateTimeField(
+    order_created = models.DateField(
         _('дата створення'),
+        default=timezone.now,
+        null=True,
+        blank=True)
+    order_updated = models.DateField(
+        _('дата редагування'),
         auto_now_add=True)
-    updated = models.DateTimeField(
-        _('дата створення'),
-        auto_now=True)
-    regime = models.CharField(
-        _('митний режим'),
-        max_length=255,
+    regime = models.ForeignKey(
+        CustomsRegime,
         null=True,
-        blank=True)
-    vehicle = models.CharField(
-        _('вид транспорту'),
-        max_length=8,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name='regime',
+        verbose_name=_('митний режим'))
+    vehicle = models.ForeignKey(
+        VehicleType,
         null=True,
-        blank=True)
-    exporter_name = models.CharField(
-        _('найменування юридичної особи/фізичної особи-підприємця'),
-        max_length=255,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name='vehicle',
+        verbose_name=_('вид транспорту'))
+    customer = models.ForeignKey(
+        Company,
         null=True,
-        blank=True)   
-    exporter_address = models.CharField(
-        _('юридична адреса'),
-        max_length=255,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name='company_customer',
+        limit_choices_to={'status': '1'},
+        verbose_name=_('клієнт'))
+    exporter = models.ForeignKey(
+        Company,
         null=True,
-        blank=True) 
-    exporter_code = models.CharField(
-        _('ЄДРПОУ'),
-        max_length=8,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name='company_exporter',
+        limit_choices_to={'status': '2'},
+        verbose_name=_('експортер'))
+    importer = models.ForeignKey(
+        Company,
         null=True,
-        blank=True)
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name='company_importer',
+        limit_choices_to={'status': '3'},
+        verbose_name=_('імпортер'))
+    carrier = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name='company_carrier',
+        limit_choices_to={'status': '4'},
+        verbose_name=_('перевізник'))
+    forwarder = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        on_delete=models.DO_NOTHING,
+        related_name='company_forwarder',
+        limit_choices_to={'status': '5'},
+        verbose_name=_('експедитор'))
     cargo_name = models.CharField(
         _('найменування вантажу'),
         max_length=255,

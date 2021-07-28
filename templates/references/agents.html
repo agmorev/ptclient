@@ -1,0 +1,184 @@
+<!-- templates/agents/agents.html -->
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load countries %}
+
+
+{% block pageheader %}
+    {% trans "Представники" %}
+{% endblock pageheader %}
+
+{% block breadcrumb %}
+    <li class="active">{% trans "Представники" %}</li>
+{% endblock breadcrumb %}
+
+{% block CSS %}
+    <link rel="stylesheet" href="{% static 'flags/sprite-hq.css' %}">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+{% endblock CSS %}
+    {% comment %} <link rel="stylesheet" href="{% static 'flags/sprite-hq.css' %}"> {% endcomment %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-9">
+            <div class="box box-warning">
+                {{map|safe}}
+            </div>
+        </div>
+        <div class="col-md-3">            
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{% trans "Представництво компанії" %}</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">           
+                    <ul class="products-list product-list-in-box">
+                        {% for agent in country_counts %}
+                            {% get_country agent.country as country %}
+                            {% if country %}    
+                                <li class="item">
+                                    <div class="product-img">                                                  
+                                        <i class="flag2x {{ country.flag_css }}"></i>                                                                     
+                                    </div>
+                                    <div class="product-info">
+                                        <a href="{% url 'agents' country %}" class="product-title">                                              
+                                            <span class="info-box-text pull-left">
+                                                {{ country.name }}
+                                            </span>                    
+                                            <span class="label label-warning pull-right">
+                                                {{ agent.country__count }}
+                                            </span>   
+                                        </a>
+                                    </div>
+                                </li>
+                            {% endif %}
+                        {% endfor %}                                            
+                        <li class="item">
+                            <div class="product-img">                                                  
+                                <i class="fa fa-anchor fa-2x" style="color:blue"></i>                                                                     
+                            </div>
+                            <div class="product-info">
+                                <a href="{% url 'agents' "sea" %}" class="product-title">                                              
+                                    <span class="info-box-text pull-left">
+                                        {% trans "морський" %}
+                                    </span>                    
+                                    <span class="label label-warning pull-right">
+                                        {{ sea.count }}
+                                    </span>   
+                                </a>
+                            </div>
+                        </li>
+                        <li class="item">
+                            <div class="product-img">                                                  
+                                <i class="fa fa-plane fa-2x" style="color:purple"></i>                                                                     
+                            </div>
+                            <div class="product-info">
+                                <a href="{% url 'agents' "air" %}" class="product-title">                                              
+                                    <span class="info-box-text pull-left">
+                                        {% trans "повітряний" %}
+                                    </span>                    
+                                    <span class="label label-warning pull-right">
+                                        {{ air.count }}
+                                    </span>   
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-center">
+                    <a href="{% url 'agents' "all" %}" class="uppercase">{% trans "Показати все" %}</a>
+                </div>
+                <!-- /.box-footer -->
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-success">
+                <div class="box-header">
+                    <i class="fa fa-users"></i>
+                    <h3 class="box-title">{% trans "Перелік представників" %}</h3>
+                </div>
+                <div class="box-body">
+                    <table id="example2" class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Назва" %}</th>
+                                <th>{% trans "Вид транспорту" %}</th>
+                                <th>{% trans "Країна на кордоні" %}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for agent in agents %}
+                                
+                                    <tr>                           
+                                        <td>{{ agent.name }}</td>
+                                        <td>{{ agent.vehicle.vehicle_type }}</td>
+                                        <td><i class="{{ agent.country.flag_css }}"></i> {{ agent.country.name }}</td>
+                                        <td>
+                                            <a href="{% url 'agents' agent.id %}" class="btn btn-success btn-xs pull-right">
+                                                <i class="fa fa-map-marker"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block JS %}
+    <!-- DataTable -->
+    <script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#example2').DataTable({
+                'language': {
+                    "lengthMenu": "Відобразити _MENU_ записів на сторінку",
+                    "zeroRecords": "Нічого не знайдено - вибачте",
+                    "info": "Сторінка _PAGE_ з _PAGES_",
+                    "infoEmpty": "Записи відсутні",
+                    "infoFiltered": "(відфільтровано з _MAX_ записів)",
+                    "search": "Пошук:",
+                    "paginate": {
+                        "first":      "Перша",
+                        "last":       "Остання",
+                        "next":       "Наступна",
+                        "previous":   "Попередня"
+                    },
+                },
+                'paging'      : true,
+                'lengthChange': true,
+                'searching'   : true,
+                'ordering'    : true,
+                'info'        : true,
+                'autoWidth'   : false,
+                
+            })
+        })
+    </script>
+{% endblock JS %}
+
+
+

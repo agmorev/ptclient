@@ -1,10 +1,14 @@
-<!-- templates/post-list.html -->
+<!-- templates/orders/order_list.html -->
 
 {% extends 'base.html' %}
 
 {% load static %}
 {% load i18n %}
-{% comment %} {% load widget_tweaks %} {% endcomment %}
+
+{% block CSS %}
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+{% endblock CSS %}
 
 {% block pageheader %}
     {% trans "Заявки" %}
@@ -23,8 +27,8 @@
                 <div class="btn-group">
                     <a class="btn btn-warning"
                         href="{% url 'order_list' %}"
-                        title={% trans 'Перелік' %}>
-                        <i class="fa fa-list"></i>
+                        title={% trans 'Оновити' %}>
+                        <i class="fa fa-retweet"></i>
                     </a>
                     <a class="btn btn-success"
                         href="{% url 'order_create' %}"
@@ -34,9 +38,9 @@
                 </div>
             </div>
         </div>
-        <div class="box-body table-responsive no-padding">
-            <table class="table table-hover">
-                <tbody>
+        <div class="box-body">
+            <table id="example2" class="table table-bordered table-hover table-striped">
+                <thead>
                     <tr>
                         <th>{% trans "№" %}</th>
                         <th>{% trans "Режим" %}</th>
@@ -46,14 +50,16 @@
                         <th>{% trans "Дата" %}</th>
                         <th>{% trans "Інструменти" %}</th>
                     </tr>
+                </thead>                
+                <tbody>
                     {% for order in object_list %}
                         <tr>                           
                             <td>{{ order.order_number }}</td>
-                            <td>{{ order.regime }}</td>
-                            <td>{{ order.vehicle }}</td>
+                            <td>{{ order.order_regime }}</td>
+                            <td>{{ order.order_vehicle }}</td>
                             <td>{{ order.exporter_name }}</td>
                             <td>{{ order.cargo_name }}</td>
-                            <td>{{ order.created }}</td>
+                            <td>{{ order.order_created }}</td>
                             <td>
                                 <div class="btn-group">
                                     <a class="btn btn-sm btn-info"
@@ -79,204 +85,44 @@
                                 </div>
                             </td>
                         </tr>
-                    {% empty %}
-                        <hr>
-                        <p>{% trans 'Заявки відсутні. Створіть Вашу першу заявку.' %}</p>
                     {% endfor %}
                 </tbody>
             </table>
-            
-            {% if is_paginated %}
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a  class="page-link"
-                                    href="{{ request.path }}?page={{ page_obj.previous_page_number }}"
-                                    aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                        {% endif %}
-                        {% for page in page_obj.paginator.page_range %}
-                            {% if page_obj.number == page %}
-                                <li class="page-item active" aria-current="page">
-                                    <span   class="page-link"
-                                            style=" background-color: green; 
-                                                    border-color: green;">
-                                            {{ page }}
-                                        <span class="sr-only">(current)</span>
-                                    </span>
-                                </li>
-                            {% else %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                        {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a  class="page-link"
-                                    href="{{ request.path }}?page={{ page_obj.next_page_number }}"
-                                    aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            {% endif %}
         </div>
     </div>
-
-    {% comment %} <!-- Filter Modal-->
-    <div class="modal fade" id="filterModal" tabindex="-1" role="dialog"
-            aria-labelledby="filterModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="filterModalLabel">
-                    {% trans 'Фильтровать по...' %}</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form method="GET">
-                        <div class="form-group">
-                            <div class="form-row">
-                                <div class="col-md">
-                                    <div class="form-label-group">
-                                        {{ filter.form.author|add_class:'form-control' }}
-                                        {{ filter.form.author.label_tag }}
-                                        {% if filter.form.author.help_text %}
-                                            <small class='form-text text-muted'>{{ filter.form.author.help_text }}</small>
-                                        {% endif %}
-                                        {% for error in filter.form.author.errors %}
-                                            <span class="form-text text-danger"><small>{{ error }}</small></span>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="form-row">
-                                <div class="col-md">
-                                    <div class="form-label-group">
-                                        {{ filter.form.title|add_class:'form-control' }}
-                                        {{ filter.form.title.label_tag }}
-                                        {% if filter.form.title.help_text %}
-                                            <small class='form-text text-muted'>{{ filter.form.title.help_text }}</small>
-                                        {% endif %}
-                                        {% for error in filter.form.title.errors %}
-                                            <span class="form-text text-danger"><small>{{ error }}</small></span>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>   
-                        <div class="form-group">
-                            <div class="form-row">
-                                <div class="col-md">
-                                    <div class="form-label-group">
-                                        {{ filter.form.preview|add_class:'form-control' }}
-                                        {{ filter.form.preview.label_tag }}
-                                        {% if filter.form.preview.help_text %}
-                                            <small class='form-text text-muted'>{{ filter.form.preview.help_text }}</small>
-                                        {% endif %}
-                                        {% for error in filter.form.preview.errors %}
-                                            <span class="form-text text-danger"><small>{{ error }}</small></span>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="form-row">
-                                <div class="col-md">
-                                    <div class="form-label-group">
-                                        {{ filter.form.content|add_class:'form-control' }}
-                                        {{ filter.form.content.label_tag }}
-                                        {% if filter.form.content.help_text %}
-                                            <small class='form-text text-muted'>{{ filter.form.content.help_text }}</small>
-                                        {% endif %}
-                                        {% for error in filter.form.content.errors %}
-                                            <span class="form-text text-danger"><small>{{ error }}</small></span>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="form-row">
-                                <div class="col-md-6">
-                                    <div class="form-label-group">
-                                        {{ filter.form.created__gte|add_class:'form-control' }}
-                                        {{ filter.form.created__gte.label_tag }}
-                                        {% if filter.form.created__gte.help_text %}
-                                            <small class='form-text text-muted'>{{ filter.form.created__gte.help_text }}</small>
-                                        {% endif %}
-                                        {% for error in filter.form.created__gte.errors %}
-                                            <span class="form-text text-danger"><small>{{ error }}</small></span>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-label-group">
-                                        {{ filter.form.created__lte|add_class:'form-control' }}
-                                        {{ filter.form.created__lte.label_tag }}
-                                        {% if filter.form.created__lte.help_text %}
-                                            <small class='form-text text-muted'>{{ filter.form.created__lte.help_text }}</small>
-                                        {% endif %}
-                                        {% for error in filter.form.created__lte.errors %}
-                                            <span class="form-text text-danger"><small>{{ error }}</small></span>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="form-row">
-                                <div class="col-md-6">
-                                    <div class="form-label-group">
-                                        {{ filter.form.updated__gte|add_class:'form-control' }}
-                                        {{ filter.form.updated__gte.label_tag }}
-                                        {% if filter.form.updated__gte.help_text %}
-                                            <small class='form-text text-muted'>{{ filter.form.updated__gte.help_text }}</small>
-                                        {% endif %}
-                                        {% for error in filter.form.updated__gte.errors %}
-                                            <span class="form-text text-danger"><small>{{ error }}</small></span>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-label-group">
-                                        {{ filter.form.updated__lte|add_class:'form-control' }}
-                                        {{ filter.form.updated__lte.label_tag }}
-                                        {% if filter.form.updated__lte.help_text %}
-                                            <small class='form-text text-muted'>{{ filter.form.updated__lte.help_text }}</small>
-                                        {% endif %}
-                                        {% for error in filter.form.updated__lte.errors %}
-                                            <span class="form-text text-danger"><small>{{ error }}</small></span>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>                       
-                        </div>
-                        <hr>
-                        <button class="btn btn-success btn-block" type="submit">
-                            {% trans 'Применить' %}
-                        </button>
-                        <button class="btn btn-secondary btn-block"
-                                type="button"
-                                data-dismiss="modal">
-                            {% trans 'Отменить' %}
-                        </button>
-                    </form>
-                </div>        
-            </div>
-        </div>
-    </div> {% endcomment %}
-
-
 {% endblock %}
+
+{% block JS %}
+    <!-- DataTable -->
+    <script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#example2').DataTable({
+                'language': {
+                    "lengthMenu": "Відобразити _MENU_ записів на сторінку",
+                    "zeroRecords": "Нічого не знайдено - вибачте",
+                    "info": "Сторінка _PAGE_ з _PAGES_",
+                    "infoEmpty": "Записи відсутні",
+                    "infoFiltered": "(відфільтровано з _MAX_ записів)",
+                    "search": "Пошук:",
+                    "paginate": {
+                        "first":      "Перша",
+                        "last":       "Остання",
+                        "next":       "Наступна",
+                        "previous":   "Попередня"
+                    },
+                },
+                'paging'      : true,
+                'lengthChange': true,
+                'searching'   : true,
+                'ordering'    : true,
+                'info'        : true,
+                'autoWidth'   : false,
+                
+            })
+        })
+    </script>
+{% endblock JS %}
+
+
