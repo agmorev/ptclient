@@ -149,6 +149,10 @@
                     <li class="{% if url_name == 'vehicles' %}active{% endif %}">
                         <a href="{% url 'vehicles' %}">
                         <i class="fa fa-truck"></i> {% trans "Види транспорту" %}</a>
+                    </li>
+                    <li class="{% if url_name == 'company_list' %}active{% endif %}">
+                        <a href="{% url 'company_list' %}">
+                        <i class="fa fa-share-alt"></i> {% trans "Компанії" %}</a>
                     </li>                   
                 </ul>
             </li>

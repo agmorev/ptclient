@@ -1,0 +1,44 @@
+<!-- templates/references/company_create.html -->
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block pageheader %}
+    {% trans "Компанії" %}
+{% endblock pageheader %}
+
+{% block breadcrumb %}
+    <li class="">{% trans "Компанії" %}</li>
+    <li class="active">{% trans "Видалення" %}</li>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="box box-danger">
+        <div class="box-header">
+            <i class="fa fa-file-text-o"></i>
+            <h3 class="box-title">{% trans "Видалення компанії" %}</h3>
+            <div class="box-tools pull-right" data-toggle="tooltip" title="">
+                <div class="btn-group">
+                    <a class="btn btn-warning"
+                        href="{% url 'company_list' %}"
+                        title={% trans 'Перелік' %}>
+                        <i class="fa fa-list"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="form-group">
+                <form class="" action="" method="post">
+					{% csrf_token %}
+					<p>Вы впевнені, що хочете видалити інформацію про компанію "{{ company.name }}"?</p>
+					<button class="btn btn-danger" type="submit">{% trans 'Видалити' %}</button>
+					<a class="btn btn-secondary" href="{% url 'company_list' %}">{% trans 'Відмінити' %}</a>
+				</form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

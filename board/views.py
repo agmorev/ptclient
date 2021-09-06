@@ -5,6 +5,7 @@ from posts.models import Post
 from news.views import NewsListView, LawsListView
 
 
+
 class BoardView(TemplateView):
     template_name = "board/board.html"
 

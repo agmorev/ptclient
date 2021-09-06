@@ -1,97 +1,146 @@
-<!-- templates/post-edit.html -->
+<!-- templates/order/order_update.html -->
 
 {% extends 'base.html' %}
 
 {% load static %}
 {% load i18n %}
-{% load widget_tweaks %}
+{% load crispy_forms_tags %}
 
-{% block head %}
-    {{ form.media }}
-{% endblock head %}
+{% block CSS %}
+	<!-- Datepicker -->
+	<link rel="stylesheet" href="{% static "plugins/datepicker/datepicker3.css" %}">
+{% endblock CSS %}
+
+{% block pageheader %}
+    {% trans "Заявки" %}
+{% endblock pageheader %}
+
+{% block breadcrumb %}
+    <li class="">{% trans "Заявки" %}</li>
+    <li class="active">{% trans "Редагування" %}</li>
+{% endblock breadcrumb %}
 
 {% block content %}
-    <div class="card mt-2">
-        <div class="card-header py-0 px-3 text-white bg-dark">
-            <h3>{% trans 'Форум' %}</h3>
+    <div class="box box-success">
+        <div class="box-header">
+            <i class="fa fa-file-text-o"></i>
+            <h3 class="box-title">{% trans "Редагування заявки" %}</h3>
+            <div class="box-tools pull-right" data-toggle="tooltip" title="">
+                <div class="btn-group">
+                    <a class="btn btn-warning"
+                        href="{% url 'order_list' %}"
+                        title={% trans 'Перелік' %}>
+                        <i class="fa fa-list"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="card-body p-1">
-            <h4 class="pl-3">{% trans 'Редактирование публикации' %}</h4>
-            <hr>
+        <div class="box-body">
+            <div>
+                <h4 class='text-center'><b>{% trans "ЗАЯВКА" %}</b></h4>
+                <h5 class='text-center'><b>{% trans "до Договору про надання послуг з видачі фінансових гарантій" %}</b></h4></h5>
+                <h5 class='text-center'> 
+                    {% blocktrans %}
+                        ГАРАНТ: Незалежний фінансовий посередник - ПТ "ПЕНТАДА ТРАНС 
+                        (код ЄДРПОУ 36701373, адреса: 04073, м. Київ, вул. Вікентія Хвойки, 
+                        будинок 21, офіс 360, контактні дані +38 (067) 447 60 66
+                    {% endblocktrans %}
+                </h5>
+            </div>
             <div class="form-group">
-                <form enctype="multipart/form-data" method="post">
+                <form method='post' enctype="multipart/form-data">
                     {% csrf_token %}
-                    {% for hidden in form.hidden_fields %}
-                        {{ hidden }}
-                    {% endfor %}
-                    <div class="form-group">
-                        <div class="form-label-group">
-                            <b>{{ form.title.label_tag }}</b>
-                            <p>{{ form.title|add_class:'form-control' }}</p>
-                            {% if form.title.help_text %}
-                                <small class='help-block' style="color: grey">{{ form.title.help_text }}</small>
-                            {% endif %}
-                            {% for error in form.title.errors %}
-                                <span class="help-block"><small>{{ error }}</small></span>
-                            {% endfor %}
+                    {% crispy form %}
+                        
+                    {{ goods_form.management_form|crispy }}   
+                    <div id='form_set_goods'>
+                        {% for item in goods_form.forms %}
+                            {{ item.non_field_errors }}
+                            {{ item.errors }}
+                            <div class='no-error'> 
+                                {{ item.id }}                  
+                                {% crispy item %}                         
+                            </div>                                       
+                        {% endfor %}
+                    </div>
+                    <input type='button' class='btn btn-sm btn-block btn-success' value='{% trans "Додати товар" %}' id='add_more_goods'>
+                    <div id='empty_form_goods' style='display:none'>
+                        <div class='no-error'>                      
+                            {% crispy goods_form.empty_form %}
                         </div>
                     </div>
-                    <hr>
-                    <div class="form-group">
-                        <div class="form-label-group">
-                            <b>{{ form.preview.label_tag }}</b>
-                            <p>{{ form.preview|add_class:'form-control'|attr:'rows:2' }}</p>
-                            {% if form.preview.help_text %}
-                                <small class='help-block' style="color: grey">{{ form.preview.help_text }}</small>
-                            {% endif %}
-                            {% for error in formpreview.errors %}
-                                <span class="help-block"><small>{{ error }}</small></span>
-                            {% endfor %}
-                        </div>
+                    
+                    <hr> 
+
+                    <p style="font-size: 21px;">{% trans "4. Товаротранспортні документи" %}</p>
+
+                    {{ docs_form.management_form|crispy }}   
+                    <div id='form_set_docs'>
+                        {% for item in docs_form.forms %}
+                            {{ item.non_field_errors }}
+                            {{ item.errors }}
+                            <div class='no-error'> 
+                                {{ item.id }}                  
+                                {% crispy item %}                         
+                            </div>                                       
+                        {% endfor %}
                     </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-sm-1">
-                            {% if post.image %}
-                                <img src="{{ post.image.url }}" alt="" class="img-thumbnail">
-                            {% else %}
-                                    <img src="{% static 'img/publication.jpg' %}" class="img-thumbnail">
-                            {% endif %}
+                    <input type='button' class='btn btn-sm btn-block btn-success' value='{% trans "Додати документ" %}' id='add_more_docs'>
+                    <div id='empty_form_docs' style='display:none'>
+                        <div class='no-error'>                      
+                            {% crispy docs_form.empty_form %}
                         </div>
-                        <div class="col-sm-10">
-                            <div class="form-group">
-                                <div class="form-label-group">
-                                    <b>{{ form.image.label_tag }}</b>
-                                    {{ form.image }}
-                                    {% if form.image.help_text %}
-                                        <small class='help-block' style="color: grey">{{ form.image.help_text }}</small>
-                                    {% endif %}
-                                    {% for error in form.image.errors %}
-                                        <span class="help-block"><small>{{ error }}</small></span>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <div class="form-label-group">
-                            <b>{{ form.content.label_tag }}</b>
-                            <p>{{ form.content }}</p>
-                            {% if form.content.help_text %}
-                                <small class='help-block' style="color: grey">{{ form.content.help_text }}</small>
-                            {% endif %}
-                            {% for error in form.content.errors %}
-                                <span class="help-block"><small>{{ error }}</small></span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <hr>
-                    <button class="btn btn-success ml-2" type="submit">{% trans 'Сохранить' %}</button>
-                    <a class="btn btn-secondary ml-2" href="{% url 'post_list' topic=post.topic_id %}">{% trans 'Отменить' %}</a>
+                    </div>   
+
+                    <hr>                    
+                                
+                    <div class="buttonHolder mt-3">
+                        <input type="submit" name="submit" value={% trans "Зберегти" %} class="btn btn-success" id="submit-id-submit">
+                        <a class="btn btn-default" href="{% url 'order_list' %}">{% trans "Відмінити" %}</a>
+                    </div>                    
                 </form>
             </div>
         </div>
     </div>
-    <br>
 {% endblock %}
+
+{% block JS %}
+    <!-- Datepicker -->
+    <script src="{% static "plugins/datepicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static 'plugins/datepicker/locales/bootstrap-datepicker.ua.js' %}" charset="UTF-8"></script>
+    
+    <!-- Page script -->
+    <script>
+        $(function () {
+            //Date picker
+            $.fn.datepicker.defaults.format = "dd.mm.yyyy";
+            $('.datepicker').datepicker({
+                autoclose: true,
+                uiLibrary: 'bootstrap4',
+                language	: 'ua'
+            });
+        });
+    </script>
+
+    <script src="{% static 'plugins/bootstrap/js/bootstrap-collapse.js' %}"></script>
+    <script src="{% static 'plugins/jquery-formset/jquery.formset.js' %}"></script>
+    <script type="text/javascript">
+        $('#add_more_goods').click(function() {
+            var form_idx = $('#id_goods-TOTAL_FORMS').val();
+            $('#form_set_goods').append($('#empty_form_goods').html().replace(/__prefix__/g, form_idx));
+            $('#id_goods-TOTAL_FORMS').val(parseInt(form_idx)+1);
+        });
+        $('#add_more_docs').click(function() {
+            var form_idx = $('#id_docs-TOTAL_FORMS').val();
+            $('#form_set_docs').append($('#empty_form_docs').html().replace(/__prefix__/g, form_idx));
+            $('#id_docs-TOTAL_FORMS').val(parseInt(form_idx)+1);
+        });
+    </script>
+
+    <style>
+        .collapse {display: none;}
+        .in.collapse {display: block;height: auto;overflow: auto;}
+        .collapsing {position: relative;height: 0;overflow: hidden;-webkit-transition-timing-function: ease;-o-transition-timing-function: ease;transition-timing-function: ease;-webkit-transition-duration: .35s;-o-transition-duration: .35s;transition-duration: .35s;-webkit-transition-property: height,visibility;-o-transition-property: height,visibility;transition-property: height,visibility;}
+        {% comment %} legend {font-size: 1.2rem;} {% endcomment %}
+    </style>
+{% endblock JS %}

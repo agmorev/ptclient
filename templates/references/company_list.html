@@ -1,0 +1,130 @@
+<!-- templates/references/companies.html -->
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% load i18n %}
+{% load countries %}
+
+{% block CSS %}
+    <link rel="stylesheet" href="{% static 'flags/sprite-hq.css' %}">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+    <style>
+        @media only screen and (max-width: 900px) {
+            .one{
+                display: none;
+            }
+        }
+    </style>
+{% endblock CSS %}
+
+{% block pageheader %}
+    {% trans "Компанії" %}
+{% endblock pageheader %}
+
+{% block breadcrumb %}
+    <li class="active">{% trans "Компанії" %}</li>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="box box-success">
+        <div class="box-header">
+            <i class="fa fa-share-alt"></i>
+            <h3 class="box-title">{% trans "Перелік компаній" %}</h3>
+            <div class="box-tools pull-right" data-toggle="tooltip" title="">
+                <div class="btn-group">
+                    <a class="btn btn-warning"
+                        href="{% url 'company_list' %}"
+                        title={% trans 'Оновити' %}>
+                        <i class="fa fa-retweet"></i>
+                    </a>
+                    <a class="btn btn-success"
+                        href="{% url 'company_create' %}"
+                        title={% trans 'Створити' %}>
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="box-body">
+            <table id="example2" class="table table-bordered table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>{% trans "Назва" %}</th>
+                        <th>{% trans "ЄДРПОУ" %}</th>
+                        <th class='one'>{% trans "ІПН" %}</th>
+                        <th class='one'>{% trans "Адреса" %}</th>
+                        <th class='one'>{% trans "Країна" %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for company in companies %}
+                        {% get_country company.country as country %}
+                        <tr>                           
+                            <td>{{ company.name }}</td>
+                            <td>{{ company.code }}</td>
+                            <td class='one'>{{ company.tax }}</td>
+                            <td class='one'>{{ company.address }}</td>
+                            <td class='one'><i class="{{ country.flag_css }}"></i></td>
+                            <td>
+                                <div class="btn-group">
+                                    <a class="btn"
+                                        href="{% url 'company_update' pk=company.pk %}"
+                                        title={% trans 'Редагувати' %}>
+                                        <span style="color: green;">
+                                            <i class="fa fa-edit"></i>
+                                        </span>
+                                    </a>
+                                    <a class="btn"
+                                        href="{% url 'company_delete' pk=company.pk %}"
+                                        title={% trans 'Видалити' %}>
+                                        <span style="color: red;">
+                                            <i class="fa fa-trash"></i>
+                                        </span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block JS %}
+    <!-- DataTable -->
+    <script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#example2').DataTable({
+                'language': {
+                    "lengthMenu": "Відобразити _MENU_ записів на сторінку",
+                    "zeroRecords": "Нічого не знайдено - вибачте",
+                    "info": "Сторінка _PAGE_ з _PAGES_",
+                    "infoEmpty": "Записи відсутні",
+                    "infoFiltered": "(відфільтровано з _MAX_ записів)",
+                    "search": "Пошук:",
+                    "paginate": {
+                        "first":      "Перша",
+                        "last":       "Остання",
+                        "next":       "Наступна",
+                        "previous":   "Попередня"
+                    },
+                },
+                'paging'      : true,
+                'lengthChange': true,
+                'searching'   : true,
+                'ordering'    : true,
+                'info'        : true,
+                'autoWidth'   : false,
+                
+            })
+        })
+    </script>
+{% endblock JS %}
+
+

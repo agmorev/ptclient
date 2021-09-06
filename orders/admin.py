@@ -1,32 +1,49 @@
 from django.contrib import admin
-from .models import Order
-from references.models import Company
+from .models import Order, Goods, UploadDocs
+from references.models import Company, CustomsOffice, CustomsRegime
 from django.utils.translation import ugettext_lazy as _
+
+
+class GoodsInline(admin.TabularInline):
+    model = Goods
+    extra = 1
+
+
+class UploadDocsInline(admin.TabularInline):
+    model = UploadDocs
+    extra = 1
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'regime', 'vehicle', 'exporter', 'order_created')
-    list_filter = ('regime', 'vehicle')
+    inlines = [GoodsInline, UploadDocsInline]
+    list_display = ('order_number', 'order_created', 'regime', 'principal', 'vehicle', 'expired_date',)
+    list_display_links = ('order_number', 'order_created', 'principal', 'expired_date',)
+    list_filter = ('vehicle', 'regime')
+    date_hierarchy = 'order_created'
     fieldsets = (
 
         (_('ЗАЯВКА'), {
             'classes': ('wide', 'extrapretty'),
-            'fields': [('order_number', 'order_created'), ('regime','vehicle')]
+            'fields': ['order_number', 'order_created']
         }),
-        (_('1. Учасники зовнішньоекономічної операції'), {
+        (_('УЧАСНИКИ ПРОЦЕДУРИ'), {
             'classes': ('wide', 'extrapretty'),
-            'fields': ['customer', ('exporter', 'importer'), ('carrier', 'forwarder')]
+            'fields': ['principal', 'customs']
         }),
-        (_('2. Інформація про вантаж'), {
+        (_('ПРОЦЕДУРА ГАРАНТУВАННЯ'), {
             'classes': ('wide', 'extrapretty'),
-            'fields': [('cargo_name', 'cargo_code'), ('cargo_number', 'cargo_addnumber'), ('cargo_value', 'cargo_currency'), 'cargo_duties']
+            'fields': ['procedure', 'regime', 'vehicle', 'customs_departure', 'customs_destination', 'expired_date']
         }),
     )
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name in ("customer", 'exporter', 'importer', 'carrier', 'forwarder'):
-            kwargs["queryset"] = Company.objects.filter(user=request.user)        
+        if db_field.name in ('customer', 'principal'):
+            kwargs["queryset"] = Company.objects.filter(user=request.user)  
+        if db_field.name == 'customs':
+            kwargs["queryset"] = CustomsOffice.objects.filter(office_code__endswith='000')
+        if db_field.name == 'regime':
+            kwargs["queryset"] = CustomsRegime.objects.filter(status=True)      
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):

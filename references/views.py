@@ -1,11 +1,24 @@
 import folium
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 from folium import plugins
 from PIL._imaging import display
-from .models import Agent, Currency, Document, CustomsOffice, CustomsEntityType, CustomsRegime, VehicleType
-from django.http import request
+from .models import (
+    Agent, 
+    Currency, 
+    Document, 
+    CustomsOffice, 
+    CustomsEntityType, 
+    CustomsRegime, 
+    VehicleType,
+    Company
+)
+from .forms import CompanyForm
+from django.http import HttpResponseRedirect, request
 from django.db.models import Count, Q
 import decimal
+from django.contrib.messages.views import SuccessMessageMixin
+from django.utils.translation import ugettext_lazy as _
+from django.urls import reverse, reverse_lazy
 
 
 class AgentsView(TemplateView):
@@ -127,3 +140,74 @@ class VehicleTypeView(ListView):
     template_name ='references/vehicles.html'
     context_object_name = 'vehicles'
     model = VehicleType
+
+
+class CompanyView(ListView):
+    template_name ='references/company_list.html'
+    context_object_name = 'companies'
+    model = Company
+    
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Company.objects.all()
+        else:
+            return Company.objects.filter(user=self.request.user, status=True)
+
+
+class CompanyCreateView(SuccessMessageMixin, CreateView):
+    """Creating of a new company"""
+    model = Company
+    form_class = CompanyForm
+    template_name = 'references/company_create.html'
+    success_url = reverse_lazy('company_list')
+    success_message = _('Компанію успішно створено')
+
+    def get_form_kwargs(self):
+        kwargs = super(CompanyCreateView, self).get_form_kwargs()
+        kwargs['user_id'] = self.request.user.id
+        return kwargs
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form = self.get_form()
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.user = request.user
+            order.save()
+            return super(CompanyCreateView, self).form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+class CompanyUpdateView(SuccessMessageMixin, UpdateView):
+    """Updating of an existing company"""
+    model = Company
+    form_class = CompanyForm
+    template_name = 'references/company_update.html'
+    success_url = reverse_lazy('company_list')
+    success_message = _('Інформацію про компанію успішно виправлено')
+
+    def get_form_kwargs(self):
+        kwargs = super(CompanyUpdateView, self).get_form_kwargs()
+        kwargs['user_id'] = self.request.user.id
+        return kwargs
+
+
+class CompanyDeleteView(SuccessMessageMixin, DeleteView):
+    """Deleting of an existing company"""
+    model = Company
+    template_name = 'references/company_delete.html'
+    success_message = _('Компанію успішно видалено')
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Call the delete() method on the fetched object and then redirect to the
+        success URL.
+        """
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        self.object.status = False
+        self.object.save()
+        return HttpResponseRedirect(success_url)
+    
+    def get_success_url(self):
+        return reverse('company_list')

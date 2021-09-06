@@ -1,55 +1,134 @@
 from django import forms
 from django.forms.formsets import TOTAL_FORM_COUNT
 from django.conf import settings
-from .models import Order
+from .models import Order, Goods, UploadDocs
+from references.models import Company, CustomsOffice, WarrantyProcedure, CustomsRegime, WarrantyType, VehicleType
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Button, ButtonHolder, Div, Field, Fieldset, HTML, Layout, MultiField, Row, Submit
 from crispy_forms.bootstrap import Accordion, AccordionGroup, AppendedText, FormActions, InlineRadios
 from django.forms.models import BaseInlineFormSet, formset_factory, inlineformset_factory, modelformset_factory
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+
+
+class WarrantiesModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, object):
+        return object.name
+
+
+class СustomsModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, object):
+        return "%s %s" % (object.office_code, object.office_name)
+
+
+class CompanyModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, object):
+        return object.name
+
+
+class RegimeModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, object):
+        return "%s.%s %s" % (object.short_name, object.code, object.name)
+
+
+class ProcedureModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, object):
+        return "%s %s" % (object.code, object.name)
+
+
+class DepartureModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, object):
+        return "%s %s" % (object.office_code, object.office_name)
+
+
+class DestinationModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, object):
+        return "%s %s" % (object.office_code, object.office_name)
+
+
+class VehicleModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, object):
+        return object.vehicle_name
 
 
 class OrderForm(forms.ModelForm):
-    
-    REGIME_CHOICES = (
-        ('1', 'EK.10'),
-        ('2', 'EK.11'),
-        ('3', 'IM.40'),
-        ('4', 'IM.74'),
-        ('5', 'TP.80'),
-        ('6', 'TP.81'),
+    warranty_type = WarrantiesModelChoiceField(
+        label='',
+        empty_label=None,
+        queryset=WarrantyType.objects.all(),
+        widget=forms.RadioSelect,
+        required=True
     )
-
-    VEHICLE_CHOICES = (
-        ('1', 'Автомобільний'),
-        ('2', 'Залізничний'),
-        ('3', 'Морський/річковий'),
-        ('4', 'Трубопровідний'),
-        ('5', 'Авіаційний'),
+    customs = СustomsModelChoiceField(
+        label=_('Бенефіціар'),
+        queryset=CustomsOffice.objects.filter(office_code__endswith='000'),
+        empty_label=_('Оберіть митницю...'),
+        widget=forms.Select(),
+        required=True
     )
-
-    order_regime = forms.ChoiceField(
-        label=_('Митний режим'),
-        required=False,
-        choices=REGIME_CHOICES)
-    order_vehicle = forms.ChoiceField(
-        label=_('Вид транспорту'),
-        required=False,
-        choices=VEHICLE_CHOICES)
+    principal = CompanyModelChoiceField(
+        label=_('Принципал'),
+        queryset=Company.objects.none(),
+        empty_label=_('Оберіть компанію...'),
+        widget=forms.Select(),
+        required=True
+    )
+    procedure = ProcedureModelChoiceField(
+        label=_('Процедура'),
+        queryset=WarrantyProcedure.objects.all(),
+        empty_label=_('Оберіть процедуру...'),
+        widget=forms.Select(),
+        required=True
+    )
+    regime = RegimeModelChoiceField(
+        label=_('Режим'),
+        queryset=CustomsRegime.objects.filter(status=True),
+        empty_label=_('Оберіть режим...'),
+        widget=forms.Select(),
+        required=False
+    )
+    customs_departure = DepartureModelChoiceField(
+        label=_('Відправлення'),
+        queryset=CustomsOffice.objects.all(),
+        empty_label=_('Оберіть митницю відправлення...'),
+        widget=forms.Select(),
+        required=False
+    )
+    customs_destination = DestinationModelChoiceField(
+        label=_('Призначення'),
+        queryset=CustomsOffice.objects.all(),
+        empty_label=_('Оберіть митницю призначення...'),
+        widget=forms.Select(),
+        required=False
+    )
+    vehicle = VehicleModelChoiceField(
+        label=_('Транспорт'),
+        queryset=VehicleType.objects.all(),
+        empty_label=_('Оберіть вид транспорту...'),
+        widget=forms.Select(),
+        required=True
+    )
 
     class Meta:
         model = Order
         fields = (
-            'user',
             'order_number',
-            # 'order_created',
-            # 'order_updated',
-            'order_regime',
-            'order_vehicle',
+            'order_created',
+            'warranty_type',
+            'customs',
+            'principal',
+            'procedure',
+            'regime',
+            'vehicle',
+            'customs_departure',
+            'customs_destination',
+            'expired_date'
         )
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user_id, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
+        self.fields['principal'].queryset = Company.objects.filter(user_id=user_id)
+        self.fields['order_created'].label = _('від')
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.form_method = 'post'
@@ -66,160 +145,252 @@ class OrderForm(forms.ModelForm):
                             "",
                             Field(
                                 'order_number',
-                                title=_(
-                                    '''Заповнюється на розсуд клієнта для зручності ведення обліку'''
-                                )                               
+                                title=_('Номер заявки для зручності ведення обліку')                               
                             )
                         ),
-                        css_class='col-md-5'                 
-                    ),
-                    
-                )
-            ),
-            Fieldset(
-                "",
-                Row(
-                    Div(                        
-                        Fieldset(
-                            "",
-                            Field(
-                                'order_regime',
-                                title=_(
-                                    '''Зазначаються дані про наявність (відсутність) супроводжуваного багажу та ручної поклажі, а також про кількість їх місць'''
-                                )                               
-                            )
-                        ),
-                        css_class='col-md-5'                 
+                        css_class='col-md-offset-4 col-md-2'
                     ),
                     Div(
                         Fieldset(
                             "",
                             Field(
-                                'order_vehicle',
-                                placeholder=_('Кількість місць'),
-                                title=_(
-                                    '''Зазначаються дані про наявність (відсутність) несупроводжуваного багажу і про кількість його місць'''
-                                )
+                                'order_created',
+                                title=_('Дата створення заявки'),
+                                placeholder=_("дд.мм.рррр"), 
+                                css_class='form-control datepicker', 
+                                active=True                               
                             )
                         ),
-                        css_class='col-md-5'
+                        css_class='col-md-2'                 
+                    )                  
+                )
+            ),
+            HTML('<hr>'),
+            Fieldset(
+                "",
+                Row(
+                    Div(
+                        Fieldset(
+                            "Клієнт",
+                            HTML('<p>{{user.company_name}} ({{user.company_code}})</p>'),
+                            HTML('<p>{{user.company_address}}</p>'),
+                            HTML('<p>{{user.phone}}</p>'),                           
+                        ),
+                        css_class='col-md-6'
+                    ),
+                    Div(
+                        Fieldset(
+                            "Вид послуги",
+                            Field(
+                                'warranty_type',
+                                title=_('Оберіть пакет гарантування')                             
+                            )                            
+                        ),
+                        css_class='col-md-6'
                     )
                 )
             ),
             HTML('<hr>'),
             Fieldset(
-                _('1. Відправник вантажу'),
+                _('1. Учасники процедури'),               
                 Field(
-                    'order_regime',
-                    title=_(
-                        '''Обирається з переліку, який створено користувачем у власному профілі'''
-                    )
+                    'customs',
+                    title=_('Митний орган, на користь якого забезпечується сплата митних платежів'),
                 ),
                 Field(
-                    'order_vehicle',
-                    title=_(
-                        '''Країна, з якої прибув (згідно з документами, що підтверджують маршрут прямування, у разі їх наявності)'''
-                    )
+                    'principal',
+                    title=_('Компанія, яка є особою відповідальною за сплату митних платежів та дотримання умов митного режиму'),                              
                 ),
-                # Field(
-                #     'arrival',
-                #     title=_(
-                #         '''Країна, до якої прямує (згідно з документами, що підтверджують маршрут прямування, у разі їх наявності)'''
-                #     )
-                # ),
+                css_class='col-md-6'
             ),
-            # Fieldset(
-            #     "Зі мною прямують неповнолітні діти",
-            #     Field(
-            #         'kids_number',
-            #         placeholder=_('Кількість дітей'),
-            #         title=_(
-            #             '''Наявність (відсутність) дітей віком до 16 років, які супроводжуються громадянином і перетинають митний кордон України разом з ним, із зазначенням кількості (цифрами та словами) таких дітей'''
-            #         )
-            #     ),
-            #     css_class='col-md-4'
-            # ),
-            # HTML('<hr>'),
-            # Fieldset(
-            #     _('2. Відомості про спосіб переміщення товарів'),
-            #     Row(
-            #         Div(
-            #             Fieldset(
-            #                 _("2.1. Супроводжуваний багаж, ручна поклажа"),
-            #                 Field(
-            #                     'accamp_number',
-            #                     placeholder=_('Кількість місць'),
-            #                     title=_(
-            #                         '''Зазначаються дані про наявність (відсутність) супроводжуваного багажу та ручної поклажі, а також про кількість їх місць'''
-            #                     )
-            #                 ),
-            #             ),
-            #             css_class='col-md-4'
-            #         ),
-            #         Div(
-            #             Fieldset(
-            #                 _("2.2. Несупроводжуваний багаж"),
-            #                 Field(
-            #                     'nonaccamp_number',
-            #                     placeholder=_('Кількість місць'),
-            #                     title=_(
-            #                         '''Зазначаються дані про наявність (відсутність) несупроводжуваного багажу і про кількість його місць'''
-            #                     )
-            #                 ),
-            #             ),
-            #             css_class='col-md-4'
-            #         ),
-            #         Div(
-            #             Fieldset(
-            #                 _("2.3. Вантажне відправлення"),
-            #                 Field(
-            #                     'cargo_number',
-            #                     placeholder=_('Кількість місць'),
-            #                     title=_(
-            #                         '''Заповнюється у разі відправлення громадянином товарів за межі митної території України у вантажному відправленні'''
-            #                     )
-            #                 ),
-            #             ),
-            #             css_class='col-md-4'
-            #         ),
-            #     ),
-            # ),
-            # HTML('<hr>'),
-            # Fieldset(
-            #     _('3. Відомості про наявність товарів'),
-            #     Fieldset(
-            #         _("3.2. Транспортний засіб особистого користування"),
-            #         Field(
-            #             'vehicle',
-            #             title=_(
-            #                 '''Обирається з переліку, який створено користувачем у власному профілі'''
-            #             )
-            #         ),
-            #         InlineRadios('purpose'),
-            #         title=_(
-            #             '''Наводяться детальні відомості про транспортний засіб особистого користування, що тимчасово ввозиться на митну територію України, ввозиться на митну територію України з метою транзиту або зворотно вивозиться за межі митної території України. У полі для зазначення мети переміщення транспортного засобу особистого користування через митний кордон України ставиться позначка в потрібній рамці'''
-            #         )
-            #     ),
-            #     Fieldset(
-            #         _('''3.3. Товари, переміщення яких через державний кордон України
-            #         обмежено (здійснюється за дозвільними документами, що видаються
-            #         органами виконавчої влади) або заборонено'''),
-            #         InlineRadios(
-            #             'limited',
-            #             title=_(
-            #                 '''Заповнення здійснюється шляхом проставлення позначки у відповідній рамці: „Так” - за наявності товарів переміщення, „Ні” - за їх відсутності'''
-            #             )
-            #         ),
-            #     ),
-            # ),
-            # HTML('<hr>'),
-            # Fieldset(
-            #     _('''4. Відомості про товари, що підлягають обов’язковому письмовому
-            #       декларуванню та/або оподаткуванню митними платежами, товари,
-            #       переміщення яких через державний кордон України заборонено
-            #       або здійснюється за дозвільними документами, що видаються
-            #       органами виконавчої влади, та інші товари, що декларуються
-            #       письмово за бажанням громадянина або на вимогу митного органу'''),
-            # ),
-            # HTML('<hr>'),
+            Fieldset(
+                _('2. Процедура гарантування'),               
+                Field(
+                    'procedure',
+                    title=_('Митна процедура, за якою гарантується сплата митних платежів'),
+                ),
+                Field(
+                    'regime',
+                    title=_('Митна режим, в якому розміщуються товари із вимогою забезпечення сплати митних платежів'),
+                ),
+                Field(
+                    'customs_departure',
+                    title=_('Підрозділ митного органу, в якому починається переміщення за процедурою гарантування'),                              
+                ),
+                Field(
+                    'customs_destination',
+                    title=_('Підрозділ митного органу, в якому закінчується переміщення за процедурою гарантування'),                              
+                ),
+                Field(
+                    'vehicle',
+                    title=_('Транспортний засіб, в якому переміщуються товари, що підлягають гарантуванню'),                              
+                ),
+                Field(
+                    'expired_date',
+                    title=_('Дата закінчення дії фінансової гарантії'), 
+                    placeholder=_("дд.мм.рррр"), 
+                    css_class='form-control datepicker', 
+                    active=True                       
+                ),               
+            ),
+            HTML('<hr>'),
+            Fieldset(
+                _('3. Інформація про товари')
+            )           
         )
+
+
+class GoodsForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(GoodsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.form_method = 'post'
+        self.helper.disable_csrf = True
+        self.helper.render_required_fields = True
+        self.helper.form_show_labels = False
+        self.helper.layout = Layout(
+            Fieldset(
+                "",
+                Row(
+                    Div(
+                        Field(
+                            'name',
+                            placeholder=_('Найменування товару'),
+                            title=_('Зазначається опис товару')
+                        ),
+                        css_class='col-md-3',
+
+                    ),
+                    Div(
+                        Field(
+                            'code',
+                            placeholder=_('Код товару'),
+                            title=_('Зазначається код товару згідно з УКТЗЕД 10 знаків')
+                        ),
+                        css_class='col-md-2'
+                    ),
+                    Div(
+                        Field(
+                            'number',
+                            placeholder=_('Вага, кг'),
+                            title=_(
+                                '''Зазначається вага товару в кг.''')
+                        ),
+                        css_class='col-md-2'
+                    ),
+                    Div(
+                        Field(
+                            'addnumber',
+                            placeholder=_('Кількість'),
+                            title=_(
+                                '''Зазначається кількість товару в додаткових одиницях виміру''')
+                        ),
+                        css_class='col-md-2'
+                    ),
+                    Div(
+                        Field(
+                            'duties',
+                            placeholder=_('Платежі, грн'),
+                            title=_(
+                                '''Зазначається сума митних платежів, що підлягає гарантуванню''')
+                        ),
+                        css_class='col-md-2'
+                    ),
+                    Div(
+                        Field(
+                            'DELETE',
+                            title=_(
+                                'В разі проставлення позначки після зберігання заявки товар буде видалено із переліку')
+                        ),
+                        css_class='col-md-1 tools'
+                    ),
+                ),
+                css_class='formset'
+            ),     
+        )
+
+    class Meta:
+        model = Goods
+        exclude = ()
+
+
+class UploadDocsForm(forms.ModelForm):
+
+    # doc_file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+
+    class Meta:
+        model = UploadDocs
+        exclude = ()
+
+    def __init__(self, *args, **kwargs):
+        super(UploadDocsForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.form_method = 'post'
+        self.helper.disable_csrf = True
+        self.helper.render_required_fields = True
+        self.helper.form_show_labels = False
+        self.helper.use_custom_control = True
+        self.helper.layout = Layout(
+            Fieldset(
+                "",
+                Row(
+                    Div(    
+                        Field(
+                            'doc_file',      
+                            title=_('Завантажити файл, що містить документ'),  
+                            # css_class='fileinput-new',
+                            css_id='customFile'                                   
+                        ),
+                        css_class='col-md-6'
+                    ),
+                    Div(     
+                        Field(
+                            'doc_name',
+                            placeholder=_('Опис документу'),
+                            title=_('Зазначається опис документу, що завантажується'),                            
+                        ), 
+                        css_class='col-md-5'
+                    ),
+                    Div(               
+                        Field(
+                            'DELETE',
+                            title=_(
+                                'В разі проставлення позначки після зберігання документ буде видалено із переліку'),                           
+                        ),
+                        css_class='col-md-1'
+                    ),
+                ),
+                
+                css_class='formset'               
+            )           
+        )
+
+
+GoodsFormSet = inlineformset_factory(
+    Order, Goods,
+    form=GoodsForm,
+    fields=(
+        'name',
+        'code',
+        'number',
+        'addnumber',
+        'duties'
+    ),
+    extra=1,
+    can_delete=True
+)
+
+
+UploadDocsFormSet = inlineformset_factory(
+    Order, UploadDocs,
+    form=UploadDocsForm,
+    fields=(
+        'doc_file',
+        'doc_name',
+    ),
+    extra=1,
+    can_delete=True
+)

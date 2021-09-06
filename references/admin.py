@@ -2,8 +2,9 @@ from django.contrib import admin
 from .models import (
     CustomsEntityType,
     CustomsRegime, 
+    WarrantyProcedure,
     VehicleType, 
-    CompanyStatus,
+    # CompanyStatus,
     Company,
     # Carrier, 
     # Consignee, 
@@ -12,7 +13,8 @@ from .models import (
     Document, 
     Currency, 
     CustomsOffice,
-    Agent
+    Agent,
+    WarrantyType
 )
 from import_export.admin import ImportExportModelAdmin
 from django.utils.translation import ugettext_lazy as _
@@ -86,7 +88,20 @@ class CustomsRegimeAdmin(ImportExportModelAdmin):
     fieldsets = (
         (_('КЛАСИФІКАТОР митних режимів'), {
             'classes': ('wide', 'extrapretty'),
-            'fields': [('code', 'short_name'), 'name'],
+            'fields': [('code', 'short_name'), ('name', 'status')],
+        }),
+    )
+
+
+@admin.register(WarrantyProcedure)
+class WarrantyProcedureAdmin(ImportExportModelAdmin):
+    list_display = ('code', 'name')
+    ordering = ['code']
+    search_fields = ('code', 'name')
+    fieldsets = (
+        (_('КЛАСИФІКАТОР процедур, що підлягають гарантуванню'), {
+            'classes': ('wide', 'extrapretty'),
+            'fields': ['code', 'name'],
         }),
     )
 
@@ -107,33 +122,46 @@ class VehicleTypeAdmin(ImportExportModelAdmin):
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'country', 'email', 'phone', 'blacklist')
+    list_display = ('name', 'code', 'country', 'email', 'phone')
     ordering = ['name']
     search_fields = ('name', 'code', 'country')
-    list_filter = ('status', 'blacklist')
+    list_filter = ('blacklist',)
     fieldsets = (
         (_('КОМПАНІЯ'), {
             'classes': ('wide', 'extrapretty'),
-            'fields': [('name', 'country'), ('code', 'tax'), 'director'],
+            'fields': [('name', 'country'), ('code', 'tax'), 'address'],
         }),
-        (_('АДРЕСА'), {
-            'classes': ('wide', 'extrapretty'),
-            'fields': ['address'],
-        }),
+        # (_('АДРЕСА'), {
+        #     'classes': ('wide', 'extrapretty'),
+        #     'fields': ['address'],
+        # }),
         (_('КОНТАКТИ'), {
             'classes': ('wide', 'extrapretty'),
-            'fields': [('email', 'phone')],
+            'fields': ['director', ('email', 'phone')],
         }),
-        (_('СТАТУС'), {
-            'classes': ('wide', 'extrapretty'),
-            'fields': ['status', 'blacklist'],
-        }),
+        # (_('СТАТУС'), {
+        #     'classes': ('wide', 'extrapretty'),
+        #     'fields': ['blacklist'],
+        # }),
     )
 
     def save_model(self, request, obj, form, change):
         if getattr(obj, 'user', None) is None:
             obj.user = request.user
         obj.save()
+
+
+@admin.register(WarrantyType)
+class WarrantyTypeAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'description'[:50])
+    search_fields = ('name',)
+    ordering = ['id']
+    fieldsets = (
+        (_('ПЕРЕЛІК послуг гарантування'), {
+            'classes': ('wide', 'extrapretty'),
+            'fields': ['name', 'description'],
+        }),
+    )
 
 
 # @admin.register(Carrier)
@@ -212,4 +240,4 @@ class CompanyAdmin(admin.ModelAdmin):
 #         obj.save()
 
 admin.site.register(Agent)
-admin.site.register(CompanyStatus)
+# admin.site.register(CompanyStatus)

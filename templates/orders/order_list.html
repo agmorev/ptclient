@@ -8,6 +8,13 @@
 {% block CSS %}
     <!-- DataTables -->
     <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+    <style>
+        @media only screen and (max-width: 900px) {
+            .one{
+                display: none;
+            }
+        }
+    </style>
 {% endblock CSS %}
 
 {% block pageheader %}
@@ -43,44 +50,60 @@
                 <thead>
                     <tr>
                         <th>{% trans "№" %}</th>
-                        <th>{% trans "Режим" %}</th>
-                        <th>{% trans "Транспорт" %}</th>
-                        <th>{% trans "Перевізник" %}</th>
-                        <th>{% trans "Товар" %}</th>
                         <th>{% trans "Дата" %}</th>
-                        <th>{% trans "Інструменти" %}</th>
+                        <th class="one">{% trans "Послуга" %}</th>
+                        <th class="one">{% trans "Бенефіціар" %}</th>
+                        <th>{% trans "Принципал" %}</th>
+                        <th class="one">{% trans "Процедура" %}</th>
+                        <th class="one">{% trans "Відправлення" %}</th>
+                        <th class="one">{% trans "Призначення" %}</th>
+                        <th class="one">{% trans "Транспорт" %}</th>
+                        <th class="one">{% trans "Строк" %}</th>
+                        <th></th>
                     </tr>
                 </thead>                
                 <tbody>
                     {% for order in object_list %}
                         <tr>                           
                             <td>{{ order.order_number }}</td>
-                            <td>{{ order.order_regime }}</td>
-                            <td>{{ order.order_vehicle }}</td>
-                            <td>{{ order.exporter_name }}</td>
-                            <td>{{ order.cargo_name }}</td>
-                            <td>{{ order.order_created }}</td>
+                            <td>{{ order.order_created|date:'d.m.Y' }}</td>
+                            <td class="one">{{ order.warranty_type }}</td>
+                            <td class="one">{{ order.customs.office_code }}</td>
+                            <td>{{ order.principal }}</td>
+                            <td class="one">{{ order.procedure.code }}</td>
+                            <td class="one">{{ order.customs_departure.office_code }}</td>
+                            <td class="one">{{ order.customs_destination.office_code }}</td>
+                            <td class="one">{{ order.vehicle.vehicle_code }}</td>
+                            <td class="one">{{ order.expired_date|date:'d.m.Y' }}</td>
                             <td>
                                 <div class="btn-group">
-                                    <a class="btn btn-sm btn-info"
-                                        href=""
+                                    <a class="btn"
+                                        href="{% url 'order_detail' pk=order.pk %}"
                                         title={% trans 'Переглянути' %}>
-                                        <i class="fa fa-eye"></i>
+                                        <span style="color: blue;">
+                                            <i class="fa fa-eye"></i>
+                                        </span>
                                     </a>
-                                    <a class="btn btn-sm btn-warning"
-                                        href=""
+                                    <a class="btn"
+                                        href="{% url 'order_update' pk=order.pk %}"
                                         title={% trans 'Редагувати' %}>
-                                        <i class="fa fa-edit"></i>
+                                        <span style="color: orange;">
+                                            <i class="fa fa-edit"></i>
+                                        </span>
                                     </a>
-                                    <a class="btn btn-sm btn-success"
+                                    <a class="btn"
                                         href=""
                                         title={% trans 'Копіювати' %}>
-                                        <i class="fa fa-copy"></i>
+                                        <span style="color: green;">
+                                            <i class="fa fa-copy"></i>
+                                        </span>
                                     </a>
-                                    <a class="btn btn-sm btn-danger"
+                                    <a class="btn"
                                         href=""
                                         title={% trans 'Видалити' %}>
-                                        <i class="fa fa-trash"></i>
+                                        <span style="color: red;">
+                                            <i class="fa fa-trash"></i>
+                                        </span>
                                     </a>
                                 </div>
                             </td>

@@ -5,6 +5,25 @@ from phonenumber_field.modelfields import PhoneNumberField
 from users.models import User
 
 
+class WarrantyType(models.Model):
+    name = models.CharField(
+        _('вид послуги'),
+        max_length=255,
+        null=True,
+        blank=True)
+    description = models.TextField(
+        _('опис послуги'),
+        null=True,
+        blank=True)
+    
+    class Meta:
+        verbose_name = _('вид послуги')
+        verbose_name_plural = _('види послуг')
+    
+    def __str__(self):
+        return str(' '.join([self.name]))
+
+
 class Currency(models.Model):
     currency_code = models.CharField(
         _('код'),
@@ -97,7 +116,7 @@ class CustomsOffice(models.Model):
         verbose_name_plural = _('митні підрозділи')
     
     def __str__(self):
-        return str(' '.join([self.office_code, self.office_name]))
+        return str(' '.join([self.office_code, self.office_name]))[:100]
 
 
 class CustomsEntityType(models.Model):
@@ -146,13 +165,37 @@ class CustomsRegime(models.Model):
         max_length=255,
         null=True,
         blank=True)
+    status = models.BooleanField(
+        null=True,
+        blank=True,
+        verbose_name = _('гарантування'))
     
     class Meta:
         verbose_name = _('митний режим')
         verbose_name_plural = _('митні режими')
     
     def __str__(self):
-        return str(' '.join([str(self.code), self.short_name]))
+        return str('.'.join([self.short_name, str(self.code)]))
+
+
+class WarrantyProcedure(models.Model):
+    code = models.CharField(
+        _('код'),
+        max_length=5,
+        null=True,
+        blank=True)
+    name = models.CharField(
+        _('назва'),
+        max_length=255,
+        null=True,
+        blank=True)
+    
+    class Meta:
+        verbose_name = _('процедура гарантування')
+        verbose_name_plural = _('процедури гарантування')
+    
+    def __str__(self):
+        return str(' '.join([str(self.code), self.name]))
 
 
 class VehicleType(models.Model):
@@ -185,20 +228,20 @@ class VehicleType(models.Model):
         return self.vehicle_name
 
 
-class CompanyStatus(models.Model):
-    status = models.CharField(
-        _('статус'),
-        max_length=255,
-        null=True,
-        blank=True)
+# class CompanyStatus(models.Model):
+#     status = models.CharField(
+#         _('статус'),
+#         max_length=255,
+#         null=True,
+#         blank=True)
 
-    class Meta:
-        ordering = ['status']
-        verbose_name = _('статус компанії')
-        verbose_name_plural = _('статуси компаній')
+#     class Meta:
+#         ordering = ['status']
+#         verbose_name = _('статус компанії')
+#         verbose_name_plural = _('статуси компаній')
 
-    def __str__(self):
-        return self.status
+#     def __str__(self):
+#         return self.status
 
 class Company(models.Model):
     user = models.ForeignKey(
@@ -237,19 +280,21 @@ class Company(models.Model):
         null=True,
         blank=True)
     email = models.EmailField(
-        _('поштова скринька'),
+        _('email'),
         null=True,
         blank=True)
     phone = PhoneNumberField(
-        _('контактний телефон'),
+        _('телефон'),
         null=True,
         blank=True)
-    status = models.ManyToManyField(
-        CompanyStatus,
+    status = models.BooleanField(
+        null=True,
         blank=True,
-        verbose_name = _('статус'))
+        default=True,
+        verbose_name = _('активна'))
     blacklist = models.BooleanField(
-        _('чорний список'),        
+        _('чорний список'),  
+        null=True,      
         blank=True)
 
     class Meta:

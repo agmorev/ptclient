@@ -6,6 +6,11 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 
+{% block CSS %}
+	<!-- Datepicker -->
+	<link rel="stylesheet" href="{% static "plugins/datepicker/datepicker3.css" %}">
+{% endblock CSS %}
+
 {% block pageheader %}
     {% trans "Заявки" %}
 {% endblock pageheader %}
@@ -53,37 +58,106 @@
                 </h5>
             </div>
             <div class="form-group">
-                <form method='post'>
+                <form method='post' enctype="multipart/form-data">
                     {% csrf_token %}
                     {% crispy form %}
                     
                     
-                    {% comment %} {{ goods.management_form|crispy }}
+                    {{ goods.management_form|crispy }}
                         
-                    <div id='form_set'>
+                    <div id='form_set_goods'>
                         {% for item in goods.forms %}
                             {{ item.non_field_errors }}
                             {{ item.errors }}
                             <div class='no-error'>                   
-                                {% crispy item %}                         
+                                {% crispy item %}                        
                             </div>                                       
                         {% endfor %}
                     </div>
-                    <input type='button' class='btn btn-sm btn-block btn-success' value='{% trans "Додати товар" %}' id='add_more'>
-                    <div id='empty_form' style='display:none'>
-                        <div class='no-error'>
-                            
+                    <input type='button' class='btn btn-sm btn-block btn-success' value='{% trans "Додати товар" %}' id='add_more_goods'>
+                    <div id='empty_form_goods' style='display:none'>
+                        <div class='no-error'>                           
                             {% crispy goods.empty_form %}
                         </div>
-                    </div> {% endcomment %}
-                                            
-                                
-                    <div class="buttonHolder mt-3">
+                    </div>  
+   
+                    <hr>
+
+                    <p style="font-size: 21px;">{% trans "4. Товаротранспортні документи" %}</p>
+
+                    {{ docs.management_form|crispy }}
+                        
+                    <div id='form_set_docs'>
+                        {% for item in docs.forms %}
+                            {{ item.non_field_errors }}
+                            {{ item.errors }}
+                            <div class='no-error'>                   
+                                {% crispy item %}                        
+                            </div>                                       
+                        {% endfor %}
+                    </div>
+                    <input type='button' class='btn btn-sm btn-block btn-success' value='{% trans "Додати документ" %}' id='add_more_docs'>
+                    <div id='empty_form_docs' style='display:none'>
+                        <div class='no-error'>                           
+                            {% crispy docs.empty_form %}
+                        </div>
+                    </div>   
+                    <hr>    
+                    <div>
                         <input type="submit" name="submit" value={% trans "Зберегти" %} class="btn btn-success" id="submit-id-submit">
-                        <a class="btn btn-default" href="">{% trans "Відмінити" %}</a>
+                        <a class="btn btn-default" href="{% url 'order_list' %}">{% trans "Відмінити" %}</a>
                     </div>                    
                 </form>
             </div>
         </div>
     </div>
 {% endblock %}
+
+{% block JS %}
+    <!-- Datepicker -->
+    <script src="{% static "plugins/datepicker/bootstrap-datepicker.js" %}"></script>
+    <script src="{% static 'plugins/datepicker/locales/bootstrap-datepicker.ua.js' %}" charset="UTF-8"></script>
+    
+    <!-- Page script -->
+    <script>
+        $(function () {
+            //Date picker
+            $.fn.datepicker.defaults.format = "dd.mm.yyyy";
+            $('.datepicker').datepicker({
+                autoclose: true,
+                uiLibrary: 'bootstrap4',
+                language	: 'ua'
+            });
+        });
+    </script>
+
+    <script src="{% static 'plugins/bootstrap/js/bootstrap-collapse.js' %}"></script>
+    <script src="{% static 'plugins/jquery-formset/jquery.formset.js' %}"></script>
+    <script type="text/javascript">
+        $('#add_more_goods').click(function() {
+            var form_idx = $('#id_goods-TOTAL_FORMS').val();
+            $('#form_set_goods').append($('#empty_form_goods').html().replace(/__prefix__/g, form_idx));
+            $('#id_goods-TOTAL_FORMS').val(parseInt(form_idx)+1);
+        });
+        $('#add_more_docs').click(function() {
+            var form_idx = $('#id_docs-TOTAL_FORMS').val();
+            $('#form_set_docs').append($('#empty_form_docs').html().replace(/__prefix__/g, form_idx));
+            $('#id_docs-TOTAL_FORMS').val(parseInt(form_idx)+1);
+        });
+    </script>
+
+    <style>
+        .collapse {display: none;}
+        .in.collapse {display: block;height: auto;overflow: auto;}
+        .collapsing {position: relative;height: 0;overflow: hidden;-webkit-transition-timing-function: ease;-o-transition-timing-function: ease;transition-timing-function: ease;-webkit-transition-duration: .35s;-o-transition-duration: .35s;transition-duration: .35s;-webkit-transition-property: height,visibility;-o-transition-property: height,visibility;transition-property: height,visibility;}
+        {% comment %} legend {font-size: 1.2rem;} {% endcomment %}
+    </style>
+
+    <script>
+    // Add the following code if you want the name of the file appear on select
+    $(".custom-file-input").on("change", function() {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+    </script>
+{% endblock JS %}
