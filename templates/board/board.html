@@ -6,6 +6,7 @@
 {% load i18n %}
 {% load crispy_forms_tags %}
 
+
 {% block pageheader %}
     {% trans "Інформаційна панель" %}
 {% endblock pageheader %}
@@ -39,72 +40,72 @@
     <!-- /.col -->
     <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="info-box bg-green">
-        <span class="info-box-icon"><i class="fa fa-usd"></i></span>
+            <span class="info-box-icon"><i class="fa fa-usd"></i></span>
 
-        <div class="info-box-content">
-            <span class="info-box-text">{{ usd.cc }}</span>
-            <span class="info-box-number">{{ usd.rate }}</span>
+            <div class="info-box-content">
+                <span class="info-box-text">{{ usd.cc }}</span>
+                <span class="info-box-number">{{ usd.rate }}</span>
 
-            <div class="progress">
-            <div class="progress-bar" style="width: 100%"></div>
+                <div class="progress">
+                <div class="progress-bar" style="width: 100%"></div>
+                </div>
+                    <span class="progress-description">
+                        {{ usd.txt }} | {{ usd.r030 }}
+                    </span>
             </div>
-                <span class="progress-description">
-                    {{ usd.txt }} | {{ usd.r030 }}
-                </span>
-        </div>
-        <!-- /.info-box-content -->
+            <!-- /.info-box-content -->
         </div>
         <!-- /.info-box -->
     </div>
     <!-- /.col -->
     <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="info-box bg-yellow">
-        <span class="info-box-icon"><i class="fa fa-rub"></i></span>
+            <span class="info-box-icon"><i class="fa fa-rub"></i></span>
 
-        <div class="info-box-content">
-            <span class="info-box-text">{{ rub.cc }}</span>
-            <span class="info-box-number">{{ rub.rate }}</span>
+            <div class="info-box-content">
+                <span class="info-box-text">{{ rub.cc }}</span>
+                <span class="info-box-number">{{ rub.rate }}</span>
 
-            <div class="progress">
-            <div class="progress-bar" style="width: 100%"></div>
+                <div class="progress">
+                <div class="progress-bar" style="width: 100%"></div>
+                </div>
+                    <span class="progress-description">
+                        {{ rub.txt }} | {{ rub.r030 }}
+                    </span>
             </div>
-                <span class="progress-description">
-                    {{ rub.txt }} | {{ rub.r030 }}
-                </span>
-        </div>
-        <!-- /.info-box-content -->
+            <!-- /.info-box-content -->
         </div>
         <!-- /.info-box -->
     </div>
     <!-- /.col -->
     <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="info-box bg-red">
-        <span class="info-box-icon"><i class="fa fa-money"></i></span>
+            <span class="info-box-icon"><i class="fa fa-money"></i></span>
 
-        <div class="info-box-content">
-            <span class="info-box-text">{% trans "ALL" %}</span>
-            <span class="info-box-number">
-                <i class="fa fa-eur"></i>
-                <i class="fa fa-usd"></i>
-                <i class="fa fa-rub"></i>
-                <i class="fa fa-won"></i>
-                <i class="fa fa-yen"></i>
-                <i class="fa fa-gbp"></i>
-                <i class="fa fa-rupee"></i>
-                <i class="fa fa-turkish-lira"></i>
-                <i class="fa fa-shekel"></i>
-            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">{% trans "ALL" %}</span>
+                <span class="info-box-number">
+                    <i class="fa fa-eur"></i>
+                    <i class="fa fa-usd"></i>
+                    <i class="fa fa-rub"></i>
+                    <i class="fa fa-won"></i>
+                    <i class="fa fa-yen"></i>
+                    <i class="fa fa-gbp"></i>
+                    <i class="fa fa-rupee"></i>
+                    <i class="fa fa-turkish-lira"></i>
+                    <i class="fa fa-shekel"></i>
+                </span>
 
-            <div class="progress">
-                <div class="progress-bar" style="width: 100%"></div>
+                <div class="progress">
+                    <div class="progress-bar" style="width: 100%"></div>
+                </div>
+                <a href="{% url 'rates' %}" target="_blank">
+                    <span class="progress-description" style="color:white">
+                        {% trans "Переглянути всі" %}<i class="fa fa-arrow-circle-right pull-right"></i>                    
+                    </span>                
+                </a>
             </div>
-            <a href="{% url 'rates' %}" target="_blank">
-                <span class="progress-description" style="color:white">
-                    {% trans "Переглянути всі" %}<i class="fa fa-arrow-circle-right pull-right"></i>                    
-                </span>                
-            </a>
-        </div>
-        <!-- /.info-box-content -->
+            <!-- /.info-box-content -->
         </div>
         <!-- /.info-box -->
     </div>
@@ -375,13 +376,13 @@
 
 <div class="row">
     <div class='col-md-12'>
-        <div class="box box-success">
+        <div class="box box-success collapsed-box">
             <div class="box-header with-border">
                 <h3 class="box-title">{% trans "Карта митної інфраструктури" %}</h3>
 
                 <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                            <i class="fa fa-minus"></i>
+                            <i class="fa fa-plus"></i>
                         </button>
                         <button type="button" class="btn btn-box-tool" data-widget="remove">
                             <i class="fa fa-times"></i>

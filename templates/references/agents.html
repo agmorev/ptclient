@@ -19,9 +19,8 @@
 {% block CSS %}
     <link rel="stylesheet" href="{% static 'flags/sprite-hq.css' %}">
     <!-- DataTables -->
-    <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/datatables/datatables.min.css' %}">
 {% endblock CSS %}
-    {% comment %} <link rel="stylesheet" href="{% static 'flags/sprite-hq.css' %}"> {% endcomment %}
 
 
 {% block content %}
@@ -121,23 +120,23 @@
                                 <th>{% trans "Назва" %}</th>
                                 <th>{% trans "Вид транспорту" %}</th>
                                 <th>{% trans "Країна на кордоні" %}</th>
-                                <th></th>
+                                <th data-priority="1"><i class="fa fa-map"></i></th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for agent in agents %}
-                                
-                                    <tr>                           
+                            {% for agent in agents %}                              
+                                    <tr>                      
                                         <td>{{ agent.name }}</td>
                                         <td>{{ agent.vehicle.vehicle_type }}</td>
                                         <td><i class="{{ agent.country.flag_css }}"></i> {{ agent.country.name }}</td>
                                         <td>
-                                            <a href="{% url 'agents' agent.id %}" class="btn btn-success btn-xs pull-right">
+                                            <a href="{% url 'agents' agent.id %}" 
+                                            class="btn btn-success btn-xs"
+                                            title={% trans 'Локація' %}>
                                                 <i class="fa fa-map-marker"></i>
                                             </a>
-                                        </td>
-                                    </tr>
-                                
+                                        </td>     
+                                    </tr>                               
                             {% endfor %}
                         </tbody>
                     </table>
@@ -149,8 +148,7 @@
 
 {% block JS %}
     <!-- DataTable -->
-    <script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/datatables.min.js' %}"></script>
     <script>
         $(document).ready(function () {
             $('#example2').DataTable({
@@ -174,6 +172,7 @@
                 'ordering'    : true,
                 'info'        : true,
                 'autoWidth'   : false,
+                'responsive'  : true
                 
             })
         })

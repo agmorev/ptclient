@@ -1,31 +1,30 @@
 from django.urls import reverse, reverse_lazy
-from django.shortcuts import redirect, get_object_or_404
-from django.db.models import F
+from django.shortcuts import redirect
 from django.db import transaction
 from django.views.generic import (
-    TemplateView,
     ListView,
     DetailView,
-    RedirectView,
     CreateView,
     UpdateView,
     DeleteView
 )
-from django.views.generic.edit import FormMixin
-# from django_filters.views import FilterView
 from django.contrib.messages.views import SuccessMessageMixin
 from .models import Order
 from .forms import OrderForm, GoodsFormSet, UploadDocsFormSet
-# from .filters import TopicFilter, PostFilter
 from django.utils.translation import ugettext_lazy as _
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, request
+from orders.models import Goods
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+import os
+from django.contrib import messages
 
 
 class OrderListView(ListView):
     """Listing of orders"""
     model = Order
     template_name = 'orders/order_list.html'
-    paginate_by = 10
+    # paginate_by = 10
     # filterset_class = PostFilter
 
     def get_queryset(self):
@@ -107,13 +106,55 @@ class OrderUpdateView(SuccessMessageMixin, UpdateView):
         goods_form.instance = self.object
         goods_form.save()
         docs_form.instance = self.object
-        print(docs_form.instance)
-        print(docs_form)
         docs_form.save()
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, goods_form, docs_form):
         return self.render_to_response(self.get_context_data(form=form, goods_form=goods_form, docs_form=docs_form))
+
+
+class OrderCopyView(SuccessMessageMixin, CreateView):
+    """Copying of an existing order"""
+    model = Order
+    form_class = OrderForm
+    template_name = 'orders/order_create.html'
+    success_url = reverse_lazy('order_list')
+    success_message = _('Заявку успішно створено')
+
+    def get_form_kwargs(self):
+        kwargs = super(OrderCopyView, self).get_form_kwargs()
+        kwargs['user_id'] = self.request.user.id
+        return kwargs
+    
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        goods = GoodsFormSet(instance=self.object)
+        docs = UploadDocsFormSet(instance=None)
+        return self.render_to_response(self.get_context_data(form=form, goods=goods, docs=docs))
+    
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        goods = GoodsFormSet(self.request.POST, instance=self.object, save_as_new=True)
+        docs = UploadDocsFormSet(self.request.POST, self.request.FILES, instance=self.object, save_as_new=True)
+        if (form.is_valid() and goods.is_valid() and docs.is_valid()):
+            return self.form_valid(form, goods, docs)
+        return self.form_invalid(form, goods, docs)
+    
+    def form_valid(self, form, goods, docs):
+        form.instance.user_id = self.request.user.id
+        self.object = form.save()
+        goods.instance = self.object
+        goods.save()
+        docs.instance = self.object
+        docs.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form, goods, docs):
+        return self.render_to_response(self.get_context_data(form=form, goods=goods, docs=docs))
 
 
 class OrderDetailView(DetailView):
@@ -122,12 +163,36 @@ class OrderDetailView(DetailView):
     template_name = 'orders/order_detail.html'
 
     def get_success_url(self):
-        return reverse('post_detail', kwargs={'pk': self.object.pk})
+        return reverse('order_detail', kwargs={'pk': self.object.pk})
 
 
 class OrderPrintView(DetailView):
     model = Order
     template_name = 'orders/order_print.html'
+
+
+class OrderSendEmail(SuccessMessageMixin, DetailView):
+    model = Order
+    template_name = 'orders/order_print.html'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        content = render_to_string('orders/order_print.html', context)
+        with open('order.html', 'w', encoding='UTF-8') as static_file:
+            static_file.write(content)
+        msg = EmailMessage(
+            _('Нава заявка від компанії ') + request.user.company_name,
+            _('У додатку до цього листа надіслано заявку від компанії ') + request.user.company_name,
+            'pentadatr@gmail.com',
+            ['pentadatr@gmail.com',]
+        )
+        msg.content_subtype = "html"
+        msg.attach_file('order.html')
+        msg.send()
+        os.remove('order.html')
+        messages.success(request, _('Заявку від успішно відправлено в центральний офіс ПТ "ПЕНТАДА ТРАНС"'))
+        return redirect('order_list')
 
     
 class OrderDeleteView(SuccessMessageMixin, DeleteView):

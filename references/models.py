@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
+from ckeditor.fields import RichTextField
 from users.models import User
 
 
@@ -199,6 +200,11 @@ class WarrantyProcedure(models.Model):
 
 
 class VehicleType(models.Model):
+    vehicle_code = models.CharField(
+        _('код транспорту'),
+        max_length=2,
+        null=True,
+        blank=True)
     vehicle_type = models.CharField(
         _('тип транспорту'),
         max_length=255,
@@ -207,11 +213,6 @@ class VehicleType(models.Model):
     vehicle_type_code = models.CharField(
         _('код типу'),
         max_length=1,
-        null=True,
-        blank=True)
-    vehicle_code = models.CharField(
-        _('код транспорту'),
-        max_length=2,
         null=True,
         blank=True)
     vehicle_name = models.CharField(
@@ -225,7 +226,7 @@ class VehicleType(models.Model):
         verbose_name_plural = _('види транспорту')
     
     def __str__(self):
-        return self.vehicle_name
+        return self.vehicle_type
 
 
 # class CompanyStatus(models.Model):
@@ -472,10 +473,16 @@ class Agent(models.Model):
         blank=True,
         null=True
     )
+    # border = models.CharField(
+    #     _('пункт пропуску'), 
+    #     max_length=255, 
+    #     blank=True,
+    #     null=True
+    # )
     vehicle = models.ForeignKey(
         VehicleType,
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
         on_delete=models.DO_NOTHING,
         related_name='vehicles',
         verbose_name=_('транспорт')
@@ -496,9 +503,12 @@ class Agent(models.Model):
         blank=True,
         null=True,
     )
-    notes = models.TextField(
-        _('примітки'), 
-        max_length=255, 
+    # phone = PhoneNumberField(
+    #     _('телефон'),
+    #     null=True,
+    #     blank=True)
+    notes = RichTextField(
+        _('примітки'),  
         blank=True,
         null=True
     )

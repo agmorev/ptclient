@@ -5,7 +5,7 @@ from .models import Order, Goods, UploadDocs
 from references.models import Company, CustomsOffice, WarrantyProcedure, CustomsRegime, WarrantyType, VehicleType
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Button, ButtonHolder, Div, Field, Fieldset, HTML, Layout, MultiField, Row, Submit
-from crispy_forms.bootstrap import Accordion, AccordionGroup, AppendedText, FormActions, InlineRadios
+from crispy_forms.bootstrap import Accordion, AccordionGroup, AppendedText, FieldWithButtons, FormActions, InlineRadios, StrictButton
 from django.forms.models import BaseInlineFormSet, formset_factory, inlineformset_factory, modelformset_factory
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
@@ -235,8 +235,17 @@ class OrderForm(forms.ModelForm):
             ),
             HTML('<hr>'),
             Fieldset(
-                _('3. Інформація про товари')
-            )           
+                _('3. Інформація про товари'),
+                HTML('''
+                <div class="text-center">
+                <a href="#" class="btn btn-default" id="calc"><i class="fa fa-calculator"></i></a>
+                <a href="#" class="btn btn-default" id="code"><i class="fa fa-barcode"></i></a>
+                </div>
+                '''),
+                      
+                
+            ),
+            HTML('<br>'),           
         )
 
 
@@ -264,11 +273,12 @@ class GoodsForm(forms.ModelForm):
 
                     ),
                     Div(
-                        Field(
-                            'code',
-                            placeholder=_('Код товару'),
-                            title=_('Зазначається код товару згідно з УКТЗЕД 10 знаків')
-                        ),
+                        FieldWithButtons('code', StrictButton("Go!")),
+                        # Field(
+                        #     'code',
+                        #     placeholder=_('Код товару'),
+                        #     title=_('Зазначається код товару згідно з УКТЗЕД 10 знаків')
+                        # ),
                         css_class='col-md-2'
                     ),
                     Div(
@@ -336,33 +346,33 @@ class UploadDocsForm(forms.ModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 "",
-                Row(
+                # Row(
+                    Div(               
+                        Field(
+                            'DELETE',
+                            title=_('В разі проставлення позначки після зберігання документ буде видалено із переліку'),                           
+                        ),
+                        css_class='col-md-1'
+                    ),
                     Div(    
+                        # FieldWithButtons('doc_file', StrictButton("Go!")),
                         Field(
                             'doc_file',      
                             title=_('Завантажити файл, що містить документ'),  
                             # css_class='fileinput-new',
-                            css_id='customFile'                                   
+                            # css_id='customFile'                                   
                         ),
-                        css_class='col-md-6'
+                        css_class='col-md-11'
                     ),
-                    Div(     
-                        Field(
-                            'doc_name',
-                            placeholder=_('Опис документу'),
-                            title=_('Зазначається опис документу, що завантажується'),                            
-                        ), 
-                        css_class='col-md-5'
-                    ),
-                    Div(               
-                        Field(
-                            'DELETE',
-                            title=_(
-                                'В разі проставлення позначки після зберігання документ буде видалено із переліку'),                           
-                        ),
-                        css_class='col-md-1'
-                    ),
-                ),
+                    # Div(     
+                    #     Field(
+                    #         'doc_name',
+                    #         placeholder=_('Опис документу'),
+                    #         title=_('Зазначається опис документу, що завантажується'),                            
+                    #     ), 
+                    #     css_class='col-md-3'
+                    # ),
+                # ),
                 
                 css_class='formset'               
             )           

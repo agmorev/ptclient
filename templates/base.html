@@ -40,6 +40,14 @@
 
             <!-- Content Wrapper. Contains page content -->
             <div class="content-wrapper">
+                {% for message in messages %}
+					<div class="alert {{ message.tags }} alert-dismissible m-1" role="alert">
+						<button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close"%} ">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						{{ message }}
+					</div>
+				{% endfor %}
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
@@ -68,6 +76,11 @@
                 <!-- /.content -->
             </div>
             <!-- /.content-wrapper -->
+
+            <!--Scroll to Top Button-->
+            {% comment %} <a id="back-to-top" href="#" class="btn btn-primary back-to-top" style="opacity: .5" role="button" aria-label="Scroll to top">
+			    <i class="fas fa-chevron-up"></i>
+		    </a> {% endcomment %}
 
             {% include 'footer.html' %}
 

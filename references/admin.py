@@ -239,5 +239,16 @@ class WarrantyTypeAdmin(ImportExportModelAdmin):
 #             obj.user = request.user
 #         obj.save()
 
-admin.site.register(Agent)
+@admin.register(Agent)
+class AgentAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'vehicle', 'country', 'latitude', 'longitude', 'notes'[:50])
+    search_fields = ('name',)
+    list_filter = ('vehicle', 'country')
+    ordering = ['id']
+    fieldsets = (
+        (_('ПЕРЕЛІК представників Гаранта'), {
+            'classes': ('wide', 'extrapretty'),
+            'fields': ['name', 'vehicle', 'country', 'latitude', 'longitude', 'notes'],
+        }),
+    )
 # admin.site.register(CompanyStatus)

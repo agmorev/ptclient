@@ -9,7 +9,7 @@
 {% block CSS %}
     <link rel="stylesheet" href="{% static 'flags/sprite-hq.css' %}">
     <!-- DataTables -->
-    <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/datatables/datatables.min.css' %}">
     <style>
         @media only screen and (max-width: 900px) {
             .one{
@@ -51,12 +51,12 @@
             <table id="example2" class="table table-bordered table-hover table-striped">
                 <thead>
                     <tr>
-                        <th>{% trans "Назва" %}</th>
-                        <th>{% trans "ЄДРПОУ" %}</th>
-                        <th class='one'>{% trans "ІПН" %}</th>
-                        <th class='one'>{% trans "Адреса" %}</th>
-                        <th class='one'>{% trans "Країна" %}</th>
-                        <th></th>
+                        <th data-priority="2">{% trans "Назва" %}</th>
+                        <th data-priority="3">{% trans "ЄДРПОУ" %}</th>
+                        <th>{% trans "ІПН" %}</th>
+                        <th>{% trans "Адреса" %}</th>
+                        <th>{% trans "Країна" %}</th>
+                        <th data-priority="1"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,9 +65,9 @@
                         <tr>                           
                             <td>{{ company.name }}</td>
                             <td>{{ company.code }}</td>
-                            <td class='one'>{{ company.tax }}</td>
-                            <td class='one'>{{ company.address }}</td>
-                            <td class='one'><i class="{{ country.flag_css }}"></i></td>
+                            <td>{{ company.tax }}</td>
+                            <td>{{ company.address }}</td>
+                            <td><i class="{{ country.flag_css }}"></i></td>
                             <td>
                                 <div class="btn-group">
                                     <a class="btn"
@@ -96,8 +96,7 @@
 
 {% block JS %}
     <!-- DataTable -->
-    <script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/datatables.min.js' %}"></script>
     <script>
         $(document).ready(function () {
             $('#example2').DataTable({
@@ -121,7 +120,7 @@
                 'ordering'    : true,
                 'info'        : true,
                 'autoWidth'   : false,
-                
+                'responsive'  : true               
             })
         })
     </script>

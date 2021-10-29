@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from django.contrib import messages
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 TEMPLATE_DIR = (BASE_DIR / 'templates')
@@ -18,8 +19,7 @@ SECRET_KEY = load_dotenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -87,6 +87,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'ptclient.wsgi.application'
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': (MEDIA_DIR / 'rss'),
+    }
+}
+
 
 
 # Database
@@ -162,6 +171,17 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+
+
+# EMAIL SETTINGS
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'pentadatr@gmail.com'
+EMAIL_HOST_PASSWORD = 'uusycylbrrsjblgl'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'pentadatr@gmail.com'
 
 
 CKEDITOR_CONFIGS = {

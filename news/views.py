@@ -2,30 +2,36 @@ from django.shortcuts import render
 from django.views.generic import ListView
 from .models import News, Laws
 import feedparser
-import random
 import datetime
-# import requests
-# from bs4 import BeautifulSoup
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 
 
+# @method_decorator(cache_page(60*60), name="dispatch")
+# @method_decorator(vary_on_cookie, name="dispatch")
 class NewsListView(ListView):
     """Listing of news"""
     template_name = 'news/news-list.html'
     paginate_by = 10
 
+    
     def get_queryset(self):
 
         news = []
 
         for src in News.objects.all():
-            publisher = src.publisher
             url = src.rss_url
             fdate = src.date_format
-            posts = feedparser.parse(url)
             author_title = src.publisher
             tags = src.tags
-
             query_srch = tags.split()
+
+            try:
+                posts = feedparser.parse(url)
+            except Exception as err:
+                print(err)
+                continue
 
             for post in posts['entries']:
                 if query_srch:
@@ -64,6 +70,8 @@ class NewsListView(ListView):
         return sorted(news, key=lambda new: datetime.datetime.strptime(new[0], '%d.%m.%Y %H:%M'), reverse=True)
 
 
+# @method_decorator(cache_page(60*60), name="dispatch")
+# @method_decorator(vary_on_cookie, name="dispatch")
 class LawsListView(ListView):
     """Listing of laws"""
     template_name = 'news/laws-list.html'
@@ -74,15 +82,18 @@ class LawsListView(ListView):
         laws = []
 
         for src in Laws.objects.all():
-            publisher = src.publisher
             url = src.rss_url
             fdate = src.date_format
-            posts = feedparser.parse(url)
             author_title = src.publisher
             tags = src.tags
-
             query_srch = tags.split()
 
+            try:
+                posts = feedparser.parse(url)
+            except Exception as err:
+                print(err)
+                continue
+                
             for post in posts['entries']:
                 if query_srch:
                     for tag in query_srch:
@@ -116,6 +127,6 @@ class LawsListView(ListView):
                         post.get('published'), fdate).strftime('%d.%m.%Y %H:%M')
                     laws.append([published, title, content,
                                  link, author_title, image, ])
-
+            
         return sorted(laws, key=lambda new: datetime.datetime.strptime(new[0], '%d.%m.%Y %H:%M'), reverse=True)
     

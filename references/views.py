@@ -62,12 +62,12 @@ class AgentsView(TemplateView):
         # folium.LayerControl().add_to(m)
         
         # add minimap to map
-        minimap = plugins.MiniMap(toggle_display=True)
-        m.add_child(minimap)
+        # minimap = plugins.MiniMap(toggle_display=True)
+        # m.add_child(minimap)
 
         # add full screen button to map
-        plugins.Fullscreen(position='topright').add_to(m)
-        draw = plugins.Draw(export=True)
+        plugins.Fullscreen(position='bottomright').add_to(m)
+        draw = plugins.Draw(export=False)
 
         # add draw tools to map
         draw.add_to(m)
@@ -91,7 +91,7 @@ class AgentsView(TemplateView):
             folium.Marker(
                 location=[agent.latitude, agent.longitude],
                 tooltip='Натисніть щоб дізнатися більше',
-                popup=agent.name+' '+agent.notes,
+                popup=folium.Popup(folium.IFrame(agent.notes), min_width=500, max_width=500),
                 icon=folium.Icon(color=color, icon=icon, prefix='fa')
             ).add_to(m)
         
