@@ -6,23 +6,20 @@
 {% load i18n %}
 {% load widget_tweaks %}
 
-{% block head %}
-    {{ form.media }}
-{% endblock head %}
-
 {% block pageheader %}
   {% trans "Форум" %}
 {% endblock pageheader %}
 
 {% block content %}
-    <div class="card">
-        <div class="card-header py-0 px-3 text-white bg-dark">
+    <div class="box box-warning">
+        <div class="box-header">
             <h4>{% trans 'Редагування публікації' %}</h4>
         </div>
-        <div class="card-body p-1">
+        <div class="box-body">
             <div class="form-group">
                 <form enctype="multipart/form-data" method="post">
                     {% csrf_token %}
+                    {{ form.media }}
                     {% for hidden in form.hidden_fields %}
                         {{ hidden }}
                     {% endfor %}
@@ -38,7 +35,6 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <hr>
                     <div class="form-group">
                         <div class="form-label-group">
                             <b>{{ form.preview.label_tag }}</b>
@@ -51,13 +47,12 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <hr>
                     <div class="row">
                         <div class="col-sm-1">
                             {% if post.image %}
                                 <img src="{{ post.image.url }}" alt="" class="img-thumbnail">
                             {% else %}
-                                    <img src="{% static 'dist/img/publication.jpg' %}" class="img-thumbnail">
+                                <img src="{% static 'dist/img/publication.jpg' %}" class="img-thumbnail">
                             {% endif %}
                         </div>
                         <div class="col-sm-10">
@@ -75,7 +70,6 @@
                             </div>
                         </div>
                     </div>
-                    <hr>
                     <div class="form-group">
                         <div class="form-label-group">
                             <b>{{ form.content.label_tag }}</b>

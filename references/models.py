@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
+from ckeditor.fields import RichTextField
 from users.models import User
 
 
@@ -15,11 +16,11 @@ class WarrantyType(models.Model):
         _('опис послуги'),
         null=True,
         blank=True)
-    
+
     class Meta:
         verbose_name = _('вид послуги')
         verbose_name_plural = _('види послуг')
-    
+
     def __str__(self):
         return str(' '.join([self.name]))
 
@@ -40,11 +41,11 @@ class Currency(models.Model):
         max_length=255,
         null=True,
         blank=True)
-    
+
     class Meta:
         verbose_name = _('валюта')
         verbose_name_plural = _('валюти')
-    
+
     def __str__(self):
         return str(' '.join([self.currency_letter]))
 
@@ -65,11 +66,11 @@ class Document(models.Model):
         max_length=255,
         null=True,
         blank=True)
-    
+
     class Meta:
         verbose_name = _('документ')
         verbose_name_plural = _('документи')
-    
+
     def __str__(self):
         return str(' | '.join([str(self.code), self.name]))
 
@@ -110,11 +111,11 @@ class CustomsOffice(models.Model):
         max_length=255,
         null=True,
         blank=True)
-    
+
     class Meta:
         verbose_name = _('митний підрозділ')
         verbose_name_plural = _('митні підрозділи')
-    
+
     def __str__(self):
         return str(' '.join([self.office_code, self.office_name]))[:100]
 
@@ -140,11 +141,11 @@ class CustomsEntityType(models.Model):
         max_length=2,
         null=True,
         blank=True)
-    
+
     class Meta:
         verbose_name = _('тип декларації')
         verbose_name_plural = _('типи декларацій')
-    
+
     def __str__(self):
         return str(' '.join([self.entity_type, self.type_code]))
 
@@ -169,11 +170,11 @@ class CustomsRegime(models.Model):
         null=True,
         blank=True,
         verbose_name = _('гарантування'))
-    
+
     class Meta:
         verbose_name = _('митний режим')
         verbose_name_plural = _('митні режими')
-    
+
     def __str__(self):
         return str('.'.join([self.short_name, str(self.code)]))
 
@@ -189,11 +190,11 @@ class WarrantyProcedure(models.Model):
         max_length=255,
         null=True,
         blank=True)
-    
+
     class Meta:
         verbose_name = _('процедура гарантування')
         verbose_name_plural = _('процедури гарантування')
-    
+
     def __str__(self):
         return str(' '.join([str(self.code), self.name]))
 
@@ -219,11 +220,11 @@ class VehicleType(models.Model):
         max_length=255,
         null=True,
         blank=True)
-    
+
     class Meta:
         verbose_name = _('вид транспорту')
         verbose_name_plural = _('види транспорту')
-    
+
     def __str__(self):
         return self.vehicle_name
 
@@ -264,12 +265,12 @@ class Company(models.Model):
         _('ІПН'),
         max_length=10,
         null=True,
-        blank=True)   
+        blank=True)
     address = models.CharField(
         _('адреса'),
         max_length=255,
         null=True,
-        blank=True) 
+        blank=True)
     country = CountryField(
         _('країна'),
         blank_label=_('Оберіть країну...'),
@@ -293,8 +294,8 @@ class Company(models.Model):
         default=True,
         verbose_name = _('активна'))
     blacklist = models.BooleanField(
-        _('чорний список'),  
-        null=True,      
+        _('чорний список'),
+        null=True,
         blank=True)
 
     class Meta:
@@ -335,12 +336,12 @@ class Company(models.Model):
 #         _('ІПН'),
 #         max_length=12,
 #         null=True,
-#         blank=True)   
-    
+#         blank=True)
+
 #     class Meta:
 #         verbose_name = _('перевізник')
 #         verbose_name_plural = _('перевізники')
-    
+
 #     def __str__(self):
 #         return str(self.carrier_name)
 
@@ -375,12 +376,12 @@ class Company(models.Model):
 #         _('ІПН'),
 #         max_length=12,
 #         null=True,
-#         blank=True)   
-    
+#         blank=True)
+
 #     class Meta:
 #         verbose_name = _('відправник')
 #         verbose_name_plural = _('відправники')
-    
+
 #     def __str__(self):
 #         return str(self.consignor_name)
 
@@ -415,12 +416,12 @@ class Company(models.Model):
 #         _('ІПН'),
 #         max_length=12,
 #         null=True,
-#         blank=True)   
-    
+#         blank=True)
+
 #     class Meta:
 #         verbose_name = _('одержувач')
 #         verbose_name_plural = _('одержувачі')
-    
+
 #     def __str__(self):
 #         return str(self.consignee_name)
 
@@ -455,27 +456,27 @@ class Company(models.Model):
 #         _('ІПН'),
 #         max_length=12,
 #         null=True,
-#         blank=True)   
-    
+#         blank=True)
+
 #     class Meta:
 #         verbose_name = _('експедитор')
 #         verbose_name_plural = _('експедитори')
-    
+
 #     def __str__(self):
 #         return str(self.forwarder_name)
 
 
 class Agent(models.Model):
     name = models.CharField(
-        _('назва'), 
-        max_length=255, 
+        _('назва'),
+        max_length=255,
         blank=True,
         null=True
     )
     vehicle = models.ForeignKey(
         VehicleType,
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
         on_delete=models.DO_NOTHING,
         related_name='vehicles',
         verbose_name=_('транспорт')
@@ -496,9 +497,8 @@ class Agent(models.Model):
         blank=True,
         null=True,
     )
-    notes = models.TextField(
-        _('примітки'), 
-        max_length=255, 
+    notes = RichTextField(
+        _('примітки'),
         blank=True,
         null=True
     )
@@ -509,4 +509,4 @@ class Agent(models.Model):
 
     def __str__(self):
         return self.name
-    
+

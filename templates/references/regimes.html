@@ -7,7 +7,7 @@
 
 {% block CSS %}
     <!-- DataTables -->
-    <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/datatables/datatables.min.css' %}">
 {% endblock CSS %}
 
 {% block pageheader %}
@@ -34,7 +34,7 @@
                 </thead>
                 <tbody>
                     {% for regime in regimes %}
-                        <tr>                           
+                        <tr>
                             <td>{{ regime.code }}</td>
                             <td>{{ regime.name }}</td>
                         </tr>
@@ -47,8 +47,7 @@
 
 {% block JS %}
     <!-- DataTable -->
-    <script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/datatables.min.js' %}"></script>
     <script>
         $(document).ready(function () {
             $('#example2').DataTable({
@@ -72,7 +71,7 @@
                 'ordering'    : true,
                 'info'        : true,
                 'autoWidth'   : false,
-                
+                'responsive'  : true
             })
         })
     </script>

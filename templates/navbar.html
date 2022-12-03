@@ -1,5 +1,13 @@
 {% load i18n %}
 
+<style>
+    @media only screen and (max-width: 900px) {
+        .one{
+            display: none;
+        }
+    }
+</style>
+
 <!-- Header Navbar -->
 <nav class="navbar navbar-static-top" role="navigation">
     <!-- Sidebar toggle button-->
@@ -25,7 +33,7 @@
                         data-toggle="dropdown"
                     >
                         <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                        <span style="text-transform:uppercase;">
+                        <span class="one" style="text-transform:uppercase;">
                             {% trans "вітаємо, " %} {{ user.first_name }}
                             
                         </span>

@@ -124,7 +124,7 @@ class OrderForm(forms.ModelForm):
             'customs_destination',
             'expired_date'
         )
-    
+
     def __init__(self, user_id, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
         self.fields['principal'].queryset = Company.objects.filter(user_id=user_id)
@@ -140,12 +140,12 @@ class OrderForm(forms.ModelForm):
             Fieldset(
                 "",
                 Row(
-                    Div(                        
+                    Div(
                         Fieldset(
                             "",
                             Field(
                                 'order_number',
-                                title=_('Номер заявки для зручності ведення обліку')                               
+                                title=_('Номер заявки для зручності ведення обліку')
                             )
                         ),
                         css_class='col-md-offset-4 col-md-2'
@@ -156,13 +156,13 @@ class OrderForm(forms.ModelForm):
                             Field(
                                 'order_created',
                                 title=_('Дата створення заявки'),
-                                placeholder=_("дд.мм.рррр"), 
-                                css_class='form-control datepicker', 
-                                active=True                               
+                                placeholder=_("дд.мм.рррр"),
+                                css_class='form-control datepicker',
+                                active=True
                             )
                         ),
-                        css_class='col-md-2'                 
-                    )                  
+                        css_class='col-md-2'
+                    )
                 )
             ),
             HTML('<hr>'),
@@ -174,7 +174,7 @@ class OrderForm(forms.ModelForm):
                             "Клієнт",
                             HTML('<p>{{user.company_name}} ({{user.company_code}})</p>'),
                             HTML('<p>{{user.company_address}}</p>'),
-                            HTML('<p>{{user.phone}}</p>'),                           
+                            HTML('<p>{{user.phone}}</p>'),
                         ),
                         css_class='col-md-6'
                     ),
@@ -183,8 +183,8 @@ class OrderForm(forms.ModelForm):
                             "Вид послуги",
                             Field(
                                 'warranty_type',
-                                title=_('Оберіть пакет гарантування')                             
-                            )                            
+                                title=_('Оберіть пакет гарантування')
+                            )
                         ),
                         css_class='col-md-6'
                     )
@@ -192,19 +192,19 @@ class OrderForm(forms.ModelForm):
             ),
             HTML('<hr>'),
             Fieldset(
-                _('1. Учасники процедури'),               
+                _('1. Учасники процедури'),
                 Field(
                     'customs',
                     title=_('Митний орган, на користь якого забезпечується сплата митних платежів'),
                 ),
                 Field(
                     'principal',
-                    title=_('Компанія, яка є особою відповідальною за сплату митних платежів та дотримання умов митного режиму'),                              
+                    title=_('Компанія, яка є особою відповідальною за сплату митних платежів та дотримання умов митного режиму'),
                 ),
                 css_class='col-md-6'
             ),
             Fieldset(
-                _('2. Процедура гарантування'),               
+                _('2. Процедура гарантування'),
                 Field(
                     'procedure',
                     title=_('Митна процедура, за якою гарантується сплата митних платежів'),
@@ -215,28 +215,28 @@ class OrderForm(forms.ModelForm):
                 ),
                 Field(
                     'customs_departure',
-                    title=_('Підрозділ митного органу, в якому починається переміщення за процедурою гарантування'),                              
+                    title=_('Підрозділ митного органу, в якому починається переміщення за процедурою гарантування'),
                 ),
                 Field(
                     'customs_destination',
-                    title=_('Підрозділ митного органу, в якому закінчується переміщення за процедурою гарантування'),                              
+                    title=_('Підрозділ митного органу, в якому закінчується переміщення за процедурою гарантування'),
                 ),
                 Field(
                     'vehicle',
-                    title=_('Транспортний засіб, в якому переміщуються товари, що підлягають гарантуванню'),                              
+                    title=_('Транспортний засіб, в якому переміщуються товари, що підлягають гарантуванню'),
                 ),
                 Field(
                     'expired_date',
-                    title=_('Дата закінчення дії фінансової гарантії'), 
-                    placeholder=_("дд.мм.рррр"), 
-                    css_class='form-control datepicker', 
-                    active=True                       
-                ),               
+                    title=_('Дата закінчення дії фінансової гарантії'),
+                    placeholder=_("дд.мм.рррр"),
+                    css_class='form-control datepicker',
+                    active=True
+                ),
             ),
             HTML('<hr>'),
             Fieldset(
                 _('3. Інформація про товари')
-            )           
+            )
         )
 
 
@@ -308,7 +308,7 @@ class GoodsForm(forms.ModelForm):
                     ),
                 ),
                 css_class='formset'
-            ),     
+            ),
         )
 
     class Meta:
@@ -337,35 +337,36 @@ class UploadDocsForm(forms.ModelForm):
             Fieldset(
                 "",
                 Row(
-                    Div(    
+                    Div(
                         Field(
-                            'doc_file',      
-                            title=_('Завантажити файл, що містить документ'),  
-                            # css_class='fileinput-new',
-                            css_id='customFile'                                   
+                            'doc_file',
+                            title=_('Завантажити файл, що містить документ'),
+                            style='overflow:hidden; text-overflow:ellipsis;',
+                            css_class='fileinput-new',
+                            css_id='customFile'
                         ),
                         css_class='col-md-6'
                     ),
-                    Div(     
+                    Div(
                         Field(
                             'doc_name',
                             placeholder=_('Опис документу'),
-                            title=_('Зазначається опис документу, що завантажується'),                            
-                        ), 
+                            title=_('Зазначається опис документу, що завантажується'),
+                        ),
                         css_class='col-md-5'
                     ),
-                    Div(               
+                    Div(
                         Field(
                             'DELETE',
                             title=_(
-                                'В разі проставлення позначки після зберігання документ буде видалено із переліку'),                           
+                                'В разі проставлення позначки після зберігання документ буде видалено із переліку'),
                         ),
                         css_class='col-md-1'
                     ),
                 ),
-                
-                css_class='formset'               
-            )           
+
+                css_class='formset'
+            )
         )
 
 

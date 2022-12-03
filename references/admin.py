@@ -1,17 +1,17 @@
 from django.contrib import admin
 from .models import (
     CustomsEntityType,
-    CustomsRegime, 
+    CustomsRegime,
     WarrantyProcedure,
-    VehicleType, 
+    VehicleType,
     # CompanyStatus,
     Company,
-    # Carrier, 
-    # Consignee, 
-    # Consignor, 
-    # Forwarder, 
-    Document, 
-    Currency, 
+    # Carrier,
+    # Consignee,
+    # Consignor,
+    # Forwarder,
+    Document,
+    Currency,
     CustomsOffice,
     Agent,
     WarrantyType
@@ -56,9 +56,9 @@ class CustomsOfficeAdmin(ImportExportModelAdmin):
         (_('КЛАСИФІКАТОР митних підрозділів'), {
             'classes': ('wide', 'extrapretty'),
             'fields': [
-                ('office_code', 'office_attr'), 
+                ('office_code', 'office_attr'),
                 ('office_name'),
-                ('office_region', 'office_locality'), 
+                ('office_region', 'office_locality'),
                 ('office_zip', 'office_address'),
             ],
         }),
@@ -239,5 +239,15 @@ class WarrantyTypeAdmin(ImportExportModelAdmin):
 #             obj.user = request.user
 #         obj.save()
 
-admin.site.register(Agent)
-# admin.site.register(CompanyStatus)
+@admin.register(Agent)
+class AgentAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'vehicle', 'country', 'latitude', 'longitude', 'notes'[:50])
+    search_fields = ('name',)
+    list_filter = ('vehicle', 'country')
+    ordering = ['id']
+    fieldsets = (
+        (_('ПЕРЕЛІК представників Гаранта'), {
+            'classes': ('wide', 'extrapretty'),
+            'fields': ['name', 'vehicle', 'country', 'latitude', 'longitude', 'notes'],
+        }),
+    )

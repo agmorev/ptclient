@@ -3,7 +3,6 @@ from django.contrib import admin
 from django.urls import include, path
 from django.contrib.flatpages import views
 from django.contrib.auth.views import LoginView, LogoutView
-from django.views.generic import TemplateView
 from django.conf.urls.static import static
 from ptclient import settings
 
@@ -15,6 +14,8 @@ urlpatterns = [
     path('home/', views.flatpage, {'url': '/home/'}, name='home'),
     path('calcs/', views.flatpage, {'url': '/calcs/'}, name='calcs'),
     path('orders/', include('orders.urls'), name='orders'),
+    path('warranties/', include('warranties.urls'), name='warranties'),
+    path('reports/', include('reports.urls'), name='reports'),
     path('contacts/', include('contacts.urls'), name='contacts'),
     path('dashboard/', include('board.urls'), name='dashboard'),
     path('news/', include('news.urls')),

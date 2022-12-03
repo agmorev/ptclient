@@ -19,7 +19,7 @@ SECRET_KEY = load_dotenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cabinet.pentada-trans.com', 'webapp-1184894.pythonanywhere.com']
 
 # Application definition
 
@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'django.contrib.staticfiles', 
+    'django.contrib.staticfiles',
     'django.contrib.flatpages',
 
     # Third party apps
@@ -44,17 +44,19 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'ckeditor',
     'django_cleanup',
-    
+
     # Local apps
     'users.apps.UsersConfig',
     'orders.apps.OrdersConfig',
+    'warranties.apps.WarrantiesConfig',
     'contacts.apps.ContactsConfig',
     'references.apps.ReferencesConfig',
     'posts.apps.PostsConfig',
     'news.apps.NewsConfig',
+    'reports.apps.ReportsConfig',
 ]
 
-SITE_ID = 1
+SITE_ID = 2
 
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -89,13 +91,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ptclient.wsgi.application'
 
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': (MEDIA_DIR / 'rss'),
+    }
+}
+
+
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'agmorev$ptclient',
+        'USER': 'agmorev',
+        'PASSWORD': 'Mi4Car6p',
+        'HOST': 'agmorev.mysql.pythonanywhere-services.com',
     }
 }
 
@@ -132,23 +145,35 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
+
+DATEFORMAT = 'm/d/Y'
+DATETIME_FORMAT = 'm/d/Y H:i'
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [STATIC_DIR, ]
-STATIC_ROOT = (BASE_DIR / 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles'), ]
+STATIC_ROOT = "/home/agmorev/ptclient/static"
 
 # Media files (Users images and etc.)
 
 MEDIA_ROOT = MEDIA_DIR
 MEDIA_URL = '/media/'
 
+# EMAIL SETTINGS
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'pentadatr@gmail.com'
+EMAIL_HOST_PASSWORD = 'mndnkmdufevvypvy'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'pentadatr@gmail.com'
 
 # CRISPY FORMS
 

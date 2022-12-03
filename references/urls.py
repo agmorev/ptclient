@@ -1,10 +1,10 @@
-from django.contrib import admin
-from django.urls import include, path
+from django.urls import path
 from . import views
+from django.views.decorators.cache import cache_page
 
 
 urlpatterns = [
-    path('agents/<str:q>', views.AgentsView.as_view(), name='agents'),
+    path('agents/<str:q>', cache_page(60*60)(views.AgentsView.as_view()), name='agents'),
     path('currencies/', views.CurrencyView.as_view(), name='currencies'),
     path('entity_types/', views.CustomsEntityTypeView.as_view(), name='entity_types'),
     path('documents/', views.DocumentView.as_view(), name='documents'),

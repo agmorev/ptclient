@@ -1,21 +1,19 @@
 import folium
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 from folium import plugins
-from PIL._imaging import display
 from .models import (
-    Agent, 
-    Currency, 
-    Document, 
-    CustomsOffice, 
-    CustomsEntityType, 
-    CustomsRegime, 
+    Agent,
+    Currency,
+    Document,
+    CustomsOffice,
+    CustomsEntityType,
+    CustomsRegime,
     VehicleType,
     Company
 )
+from django.http import HttpResponseRedirect
+from django.db.models import Count
 from .forms import CompanyForm
-from django.http import HttpResponseRedirect, request
-from django.db.models import Count, Q
-import decimal
 from django.contrib.messages.views import SuccessMessageMixin
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse, reverse_lazy
@@ -25,9 +23,9 @@ class AgentsView(TemplateView):
     template_name = "references/agents.html"
 
     def get_queryset(self):
-        q = self.kwargs['q']       
+        q = self.kwargs['q']
         if q == "sea":
-            queryset = Agent.objects.filter(vehicle__vehicle_code="10")           
+            queryset = Agent.objects.filter(vehicle__vehicle_code="10")
         elif q == "air":
             queryset = Agent.objects.filter(vehicle__vehicle_code="40")
         elif q == "all":
@@ -35,10 +33,10 @@ class AgentsView(TemplateView):
         elif q.isdigit():
             queryset = Agent.objects.filter(id=int(q))
             print(queryset)
-        else:   
+        else:
             queryset = Agent.objects.filter(country=q)
         return queryset
-    
+
     def get_context_data(self, **kwargs):
         context = super(AgentsView, self).get_context_data(**kwargs)
         figure = folium.Figure()
@@ -57,17 +55,17 @@ class AgentsView(TemplateView):
         # folium.raster_layers.TileLayer('Stamen Watercolor').add_to(m)
         # folium.raster_layers.TileLayer('CartoDB Positron').add_to(m)
         # folium.raster_layers.TileLayer('CartoDB Dark_Matter').add_to(m)
-        
+
         # # add layer control to show different maps
         # folium.LayerControl().add_to(m)
-        
+
         # add minimap to map
-        minimap = plugins.MiniMap(toggle_display=True)
-        m.add_child(minimap)
+        # minimap = plugins.MiniMap(toggle_display=False)
+        # m.add_child(minimap)
 
         # add full screen button to map
-        plugins.Fullscreen(position='topright').add_to(m)
-        draw = plugins.Draw(export=True)
+        plugins.Fullscreen(position='bottomright').add_to(m)
+        draw = plugins.Draw(export=False)
 
         # add draw tools to map
         draw.add_to(m)
@@ -84,20 +82,20 @@ class AgentsView(TemplateView):
                 icon='fa-anchor'
             elif agent.vehicle.vehicle_code == '40':
                 color='purple'
-                icon='fa-plane' 
+                icon='fa-plane'
             elif agent.vehicle.vehicle_code == '70':
                 color='gray'
-                icon='fa-gus-pump'   
+                icon='fa-gus-pump'
             folium.Marker(
                 location=[agent.latitude, agent.longitude],
                 tooltip='Натисніть щоб дізнатися більше',
-                popup=agent.name+' '+agent.notes,
+                popup=folium.Popup(folium.IFrame(agent.notes), min_width=500, max_width=500),
                 icon=folium.Icon(color=color, icon=icon, prefix='fa')
             ).add_to(m)
-        
+
         m = m._repr_html_()
         figure.render()
-               
+
         context['agents'] = Agent.objects.all()
         context['country_counts'] = Agent.objects.values('country').annotate(Count('country'))
         context['sea'] = Agent.objects.filter(vehicle__vehicle_code='10')
@@ -146,7 +144,7 @@ class CompanyView(ListView):
     template_name ='references/company_list.html'
     context_object_name = 'companies'
     model = Company
-    
+
     def get_queryset(self):
         if self.request.user.is_staff:
             return Company.objects.all()
@@ -208,6 +206,6 @@ class CompanyDeleteView(SuccessMessageMixin, DeleteView):
         self.object.status = False
         self.object.save()
         return HttpResponseRedirect(success_url)
-    
+
     def get_success_url(self):
         return reverse('company_list')

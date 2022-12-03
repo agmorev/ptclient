@@ -1,0 +1,179 @@
+<!-- templates/reports/report_general.html -->
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block CSS %}
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{% static 'bower_components/datatables/datatables/css/dataTables.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/datatables/responsive/css/responsive.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/datatables/buttons/css/buttons.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/datatables/searchpanes/css/searchPanes.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/datatables/select/css/select.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/datatables/rowgroup/css/rowGroup.bootstrap.min.css' %}">
+{% endblock CSS %}
+
+{% block pageheader %}
+    {% trans "Звіти" %}
+{% endblock pageheader %}
+
+{% block breadcrumb %}
+    <li class="active">{% trans "Звіти" %}</li>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="box box-success">
+        <div class="box-header">
+            <i class="fa fa-list-alt"></i>
+            <h3 class="box-title">{% trans "Загальний звіт" %}</h3>
+            <div class="box-tools pull-right" data-toggle="tooltip" title="">
+                <div class="btn-group">
+                    <a class="btn btn-warning"
+                        href="{% url 'report' %}"
+                        title={% trans 'Оновити' %}>
+                        <i class="fa fa-retweet"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="box-body">
+            <table id="report_general_table" class="table table-bordered table-hover table-striped">
+                <thead>
+                    <tr>
+                        {% for col in df.columns %}
+                            <th>
+                                {{ col }}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, row in df.iterrows %}
+                        <tr>
+                            {% for cell in row %}
+                                <td>
+                                    {{ cell }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <strong>Всього оформлено <span id="total"></span></strong>
+        </div>
+    </div>
+{% endblock %}
+
+{% block JS %}
+    <!-- jQuery -->
+    <script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+    <!-- Bootstrap -->
+    <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- DataTable -->
+    <script src="{% static 'bower_components/datatables/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/datatables/js/dataTables.bootstrap.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/responsive/js/responsive.bootstrap.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/buttons/js/buttons.bootstrap.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/jszip/jszip.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/pdfmake/pdfmake.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/pdfmake/vfs_fonts.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/buttons/js/buttons.colVis.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/searchpanes/js/dataTables.searchPanes.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/searchpanes/js/searchPanes.bootstrap.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/select/js/dataTables.select.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/select/js/select.bootstrap.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/rowgroup/js/dataTables.rowGroup.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/rowgroup/js/rowGroup.bootstrap.min.js' %}"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.19/api/sum().js"></script>
+    <script>
+
+        $(document).ready(function () {
+            var table = $('#report_general_table').DataTable({
+                "drawCallback": function () {
+                    var total_sum = $('#report_general_table').DataTable().column(25).data().sum();
+                    var total_count = $('#report_general_table').DataTable().column(25).data().count();
+                    $('#total').html(total_count + " гарантій на суму " + $.fn.dataTable.render.number(',', '.', 2, '').display( total_sum ) + " грн.");
+                },
+
+                'language': {
+                    "lengthMenu": "Відобразити _MENU_ записів на сторінку",
+                    "zeroRecords": "Нічого не знайдено - вибачте",
+                    "info": "Сторінка _PAGE_ з _PAGES_",
+                    "infoEmpty": "Записи відсутні",
+                    "infoFiltered": "(відфільтровано з _MAX_ записів)",
+                    "search": "Пошук:",
+                    "paginate": {
+                        "first":      "Перша",
+                        "last":       "Остання",
+                        "next":       "Наступна",
+                        "previous":   "Попередня"
+                    },
+                    "searchPanes": {
+                        "title": {
+                            _: 'Обрано фільтрів - %d',
+                            0: 'Не обрано жодного фільтра',
+                            1: 'Обрано один фільтр'
+                        },
+                        "collapseMessage": "Згорнути все",
+                        "showMessage": "Показати все",
+                        "clearMessage": "Очистити фільтр",
+                    }
+                },
+                'lengthChange': false,
+                'ordering'    : true,
+                'order'       : [[28, 'desc'], [1, 'desc']],
+                'autoWidth'   : true,
+                'responsive'  : true,
+                "searchPanes": {
+                    "dtOpts": {
+                        "select": {
+                            "style": 'multi'
+                        }
+                    },
+                    "initCollapsed": true
+                },
+                "rowGroup": {
+                    "startRender": function ( rows, group ) {
+
+                        var filteredData = $('#report_general_table').DataTable()
+                            .rows({"search": 'applied'})
+                            .data()
+                            .filter( function ( data, index ) {
+                                return data[28] == group ? true : false;
+                            } )
+                            .pluck(25);
+
+                        return group +' місяць: '+filteredData.count()+' гарантій на суму ' + $.fn.dataTable.render.number(',', '.', 2, '').display( filteredData.sum() ) + ' грн.';
+                    },
+                    "dataSrc": 28
+                },
+                "columnDefs": [
+                    { "render": $.fn.dataTable.render.number('', '.', 2, ''), "targets": [24, 25] },
+                    { "responsivePriority": 1, "targets": 0 },
+                    { "responsivePriority": 2, "targets": 1 },
+                    { "responsivePriority": 3, "targets": -5 },
+                    { "responsivePriority": 4, "targets": 22 },
+                    { "searchPanes": { "show": true }, "targets": [4, 6, 7, 12, 13, 15, 22, 27, 28] },
+                    { "searchPanes": { "show": false }, "targets": [0, 1, 2, 3, 5, 8, 9, 10, 11, 14, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 29] },
+                ],
+                "buttons": [
+                    { "extend": 'excel', "text":'<span title="Excel"><i class="fa fa-file-excel-o"></i></span>'},
+                    { "extend": "print", "text":'<span title="Друкувати"><i class="fa fa-print"></i></span>'},
+                    { "extend": "colvis", "text":'<span title="Колонки"><i class="fa fa-columns"></i></span>'},
+                    { "extend": "pageLength", "text":'<span title="Рядки"><i class="fa fa-list"></i></span>'},
+                ],
+                "dom": 'PBlfrtip',
+            });
+            table.buttons().container()
+            .appendTo( '#warranty_closed_table_wrapper .col-sm-6:eq(0)' );
+        })
+    </script>
+{% endblock JS %}
+
+

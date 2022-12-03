@@ -1,4 +1,4 @@
-<!-- templates/agents/agents.html -->
+<!-- templates/references/agents.html -->
 
 {% extends 'base.html' %}
 
@@ -19,10 +19,8 @@
 {% block CSS %}
     <link rel="stylesheet" href="{% static 'flags/sprite-hq.css' %}">
     <!-- DataTables -->
-    <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bower_components/datatables/datatables.min.css' %}">
 {% endblock CSS %}
-    {% comment %} <link rel="stylesheet" href="{% static 'flags/sprite-hq.css' %}"> {% endcomment %}
-
 
 {% block content %}
     <div class="row">
@@ -31,7 +29,7 @@
                 {{map|safe}}
             </div>
         </div>
-        <div class="col-md-3">            
+        <div class="col-md-3">
             <div class="box box-primary">
                 <div class="box-header with-border">
                     <h3 class="box-title">{% trans "Представництво компанії" %}</h3>
@@ -45,55 +43,55 @@
                     </div>
                 </div>
                 <!-- /.box-header -->
-                <div class="box-body">           
+                <div class="box-body">
                     <ul class="products-list product-list-in-box">
                         {% for agent in country_counts %}
                             {% get_country agent.country as country %}
-                            {% if country %}    
+                            {% if country %}
                                 <li class="item">
-                                    <div class="product-img">                                                  
-                                        <i class="flag2x {{ country.flag_css }}"></i>                                                                     
+                                    <div class="product-img">
+                                        <i class="flag2x {{ country.flag_css }}"></i>
                                     </div>
                                     <div class="product-info">
-                                        <a href="{% url 'agents' country %}" class="product-title">                                              
+                                        <a href="{% url 'agents' country %}" class="product-title">
                                             <span class="info-box-text pull-left">
                                                 {{ country.name }}
-                                            </span>                    
+                                            </span>
                                             <span class="label label-warning pull-right">
                                                 {{ agent.country__count }}
-                                            </span>   
+                                            </span>
                                         </a>
                                     </div>
                                 </li>
                             {% endif %}
-                        {% endfor %}                                            
+                        {% endfor %}
                         <li class="item">
-                            <div class="product-img">                                                  
-                                <i class="fa fa-anchor fa-2x" style="color:blue"></i>                                                                     
+                            <div class="product-img">
+                                <i class="fa fa-anchor fa-2x" style="color:blue"></i>
                             </div>
                             <div class="product-info">
-                                <a href="{% url 'agents' "sea" %}" class="product-title">                                              
+                                <a href="{% url 'agents' "sea" %}" class="product-title">
                                     <span class="info-box-text pull-left">
                                         {% trans "морський" %}
-                                    </span>                    
+                                    </span>
                                     <span class="label label-warning pull-right">
                                         {{ sea.count }}
-                                    </span>   
+                                    </span>
                                 </a>
                             </div>
                         </li>
                         <li class="item">
-                            <div class="product-img">                                                  
-                                <i class="fa fa-plane fa-2x" style="color:purple"></i>                                                                     
+                            <div class="product-img">
+                                <i class="fa fa-plane fa-2x" style="color:purple"></i>
                             </div>
                             <div class="product-info">
-                                <a href="{% url 'agents' "air" %}" class="product-title">                                              
+                                <a href="{% url 'agents' "air" %}" class="product-title">
                                     <span class="info-box-text pull-left">
                                         {% trans "повітряний" %}
-                                    </span>                    
+                                    </span>
                                     <span class="label label-warning pull-right">
                                         {{ air.count }}
-                                    </span>   
+                                    </span>
                                 </a>
                             </div>
                         </li>
@@ -121,23 +119,25 @@
                                 <th>{% trans "Назва" %}</th>
                                 <th>{% trans "Вид транспорту" %}</th>
                                 <th>{% trans "Країна на кордоні" %}</th>
-                                <th></th>
+                                <th data-priority="1"><i class="fa fa-map"></i></th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for agent in agents %}
-                                
-                                    <tr>                           
+                                    <tr>
                                         <td>{{ agent.name }}</td>
                                         <td>{{ agent.vehicle.vehicle_type }}</td>
                                         <td><i class="{{ agent.country.flag_css }}"></i> {{ agent.country.name }}</td>
                                         <td>
-                                            <a href="{% url 'agents' agent.id %}" class="btn btn-success btn-xs pull-right">
-                                                <i class="fa fa-map-marker"></i>
+                                            <a href="{% url 'agents' agent.id %}"
+                                                class="btn"
+                                                title={% trans 'Локація' %}>
+                                                <span style="color: green;">
+                                                    <i class="fa fa-map-marker"></i>
+                                                </span>
                                             </a>
                                         </td>
                                     </tr>
-                                
                             {% endfor %}
                         </tbody>
                     </table>
@@ -149,8 +149,7 @@
 
 {% block JS %}
     <!-- DataTable -->
-    <script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/datatables.min.js' %}"></script>
     <script>
         $(document).ready(function () {
             $('#example2').DataTable({
@@ -174,7 +173,7 @@
                 'ordering'    : true,
                 'info'        : true,
                 'autoWidth'   : false,
-                
+                'responsive'  : true
             })
         })
     </script>

@@ -27,16 +27,17 @@
                         title={% trans 'Редагувати' %}>
                         <span style="color: blue;">
                             <i class="fa fa-edit"></i>
-                        </span>                        
+                        </span>
                     </a>
                 </div>
                 <div class="btn-group">
                     <a class="btn"
                         href="{% url 'order_print' pk=order.id %}"
+                        target="_blank"
                         title={% trans 'Друкувати' %}>
                         <span style="color: green;">
                             <i class="fa fa-print"></i>
-                        </span>                       
+                        </span>
                     </a>
                 </div>
                 <div class="btn-group">
@@ -45,7 +46,7 @@
                         title={% trans 'Перелік' %}>
                         <span style="color: orange;">
                             <i class="fa fa-list"></i>
-                        </span>                       
+                        </span>
                     </a>
                 </div>
             </div>
@@ -54,10 +55,10 @@
             <div>
                 <h4 class='text-center'><b>{% trans "ЗАЯВКА №" %}{{object.order_number}}{% trans " від " %}{{object.order_created}}</b></h4>
                 <h5 class='text-center'><b>{% trans "до Договору про надання послуг з видачі фінансових гарантій" %}</b></h4></h5>
-                <h5 class='text-center'> 
+                <h5 class='text-center'>
                     {% blocktrans %}
-                        ГАРАНТ: Незалежний фінансовий посередник - ПТ "ПЕНТАДА ТРАНС 
-                        (код ЄДРПОУ 36701373, адреса: 04073, м. Київ, вул. Вікентія Хвойки, 
+                        ГАРАНТ: Незалежний фінансовий посередник - ПТ "ПЕНТАДА ТРАНС
+                        (код ЄДРПОУ 36701373, адреса: 04073, м. Київ, вул. Вікентія Хвойки,
                         будинок 21, офіс 360, контактні дані +38 (067) 447 60 66
                     {% endblocktrans %}
                 </h5>
@@ -66,10 +67,10 @@
             <div class="row">
                 <div class="col-md-6">
                     <h3>{% trans "Клієнт" %}</h3>
-                    <p><b>{% trans "Назва: " %}</b>{{user.company_name}}</p>
-                    <p><b>{% trans "ЄДРПОУ: " %}</b>{{user.company_code}}</p>
-                    <p><b>{% trans "Адреса: " %}</b>{{user.company_address}}</p>
-                    <p><b>{% trans "Контактний телефон: " %}</b>{{user.phone}}</p>
+                    <p><b>{% trans "Назва: " %}</b>{{object.user.company_name}}</p>
+                    <p><b>{% trans "ЄДРПОУ: " %}</b>{{object.user.company_code}}</p>
+                    <p><b>{% trans "Адреса: " %}</b>{{object.user.company_address}}</p>
+                    <p><b>{% trans "Контактний телефон: " %}</b>{{object.user.phone}}</p>
                 </div>
                 <div class="col-md-6">
                     <h3>{% trans "Вид послуги" %}</h3>
@@ -79,7 +80,7 @@
                                 <p style='text-align:center;'>
                                     {% if object.warranty_type.id == 1 %}
                                         <span>Х</span>
-                                    {% endif %}                       
+                                    {% endif %}
                                 </p>
                             </td>
                             <td>
@@ -91,7 +92,7 @@
                                 <p style='text-align:center;'>
                                     {% if object.warranty_type.id == 2 %}
                                         <span>Х</span>
-                                    {% endif %}                       
+                                    {% endif %}
                                 </p>
                             </td>
                             <td>
@@ -103,7 +104,7 @@
                                 <p style='text-align:center;'>
                                     {% if object.warranty_type.id == 3 %}
                                         <span>Х</span>
-                                    {% endif %}                       
+                                    {% endif %}
                                 </p>
                             </td>
                             <td >
@@ -193,7 +194,8 @@
                 <h4>{{object.user.get_full_name}}</h4>
                 <p>{{object.user.position}}</p>
                 <p>{{object.user.company_name}}
-                
+                <p>{{object.user.phone}}</p>
+                <p>{{object.user.email}}</p>
             </div>
         </div>
     </div>

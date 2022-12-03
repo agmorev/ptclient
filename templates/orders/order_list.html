@@ -7,14 +7,7 @@
 
 {% block CSS %}
     <!-- DataTables -->
-    <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
-    <style>
-        @media only screen and (max-width: 900px) {
-            .one{
-                display: none;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'bower_components/datatables/datatables.min.css' %}">
 {% endblock CSS %}
 
 {% block pageheader %}
@@ -29,15 +22,15 @@
     <div class="box box-success">
         <div class="box-header">
             <i class="fa fa-file-text-o"></i>
-            <h3 class="box-title">{% trans "Перелік оформлених заявок" %}</h3>
+            <h3 class="box-title">{% trans "Перелік заявок" %}</h3>
             <div class="box-tools pull-right" data-toggle="tooltip" title="">
                 <div class="btn-group">
-                    <a class="btn btn-warning"
+                    <a class="btn btn-small"
                         href="{% url 'order_list' %}"
                         title={% trans 'Оновити' %}>
-                        <i class="fa fa-retweet"></i>
+                        <i class="fa fa-refresh"></i>
                     </a>
-                    <a class="btn btn-success"
+                    <a class="btn btn-small"
                         href="{% url 'order_create' %}"
                         title={% trans 'Створити' %}>
                         <i class="fa fa-plus"></i>
@@ -49,62 +42,80 @@
             <table id="example2" class="table table-bordered table-hover table-striped">
                 <thead>
                     <tr>
-                        <th>{% trans "№" %}</th>
-                        <th>{% trans "Дата" %}</th>
-                        <th class="one">{% trans "Послуга" %}</th>
-                        <th class="one">{% trans "Бенефіціар" %}</th>
+                        <th data-priority="3">{% trans "№" %}</th>
+                        <th data-priority="2">{% trans "Дата" %}</th>
+                        <th>{% trans "Послуга" %}</th>
+                        <th>{% trans "Бенефіціар" %}</th>
                         <th>{% trans "Принципал" %}</th>
-                        <th class="one">{% trans "Процедура" %}</th>
-                        <th class="one">{% trans "Відправлення" %}</th>
-                        <th class="one">{% trans "Призначення" %}</th>
-                        <th class="one">{% trans "Транспорт" %}</th>
-                        <th class="one">{% trans "Строк" %}</th>
-                        <th></th>
+                        <th>{% trans "Процедура" %}</th>
+                        <th>{% trans "Відправлення" %}</th>
+                        <th>{% trans "Призначення" %}</th>
+                        <th>{% trans "Транспорт" %}</th>
+                        <th>{% trans "Строк" %}</th>
+                        <th data-priority="1"><i class="fa fa-gears"></i></th>
                     </tr>
-                </thead>                
+                </thead>
                 <tbody>
                     {% for order in object_list %}
-                        <tr>                           
+                        <tr>
                             <td>{{ order.order_number }}</td>
                             <td>{{ order.order_created|date:'d.m.Y' }}</td>
-                            <td class="one">{{ order.warranty_type }}</td>
-                            <td class="one">{{ order.customs.office_code }}</td>
+                            <td>{{ order.warranty_type }}</td>
+                            <td>{{ order.customs.office_code }}</td>
                             <td>{{ order.principal }}</td>
-                            <td class="one">{{ order.procedure.code }}</td>
-                            <td class="one">{{ order.customs_departure.office_code }}</td>
-                            <td class="one">{{ order.customs_destination.office_code }}</td>
-                            <td class="one">{{ order.vehicle.vehicle_code }}</td>
-                            <td class="one">{{ order.expired_date|date:'d.m.Y' }}</td>
+                            <td>{{ order.procedure.code }}</td>
+                            <td>{{ order.customs_departure.office_code }}</td>
+                            <td>{{ order.customs_destination.office_code }}</td>
+                            <td>{{ order.vehicle.vehicle_code }}</td>
+                            <td>{{ order.expired_date|date:'d.m.Y' }}</td>
                             <td>
-                                <div class="btn-group">
-                                    <a class="btn"
-                                        href="{% url 'order_detail' pk=order.pk %}"
-                                        title={% trans 'Переглянути' %}>
-                                        <span style="color: blue;">
-                                            <i class="fa fa-eye"></i>
-                                        </span>
-                                    </a>
-                                    <a class="btn"
-                                        href="{% url 'order_update' pk=order.pk %}"
-                                        title={% trans 'Редагувати' %}>
-                                        <span style="color: orange;">
-                                            <i class="fa fa-edit"></i>
-                                        </span>
-                                    </a>
-                                    <a class="btn"
-                                        href=""
-                                        title={% trans 'Копіювати' %}>
-                                        <span style="color: green;">
-                                            <i class="fa fa-copy"></i>
-                                        </span>
-                                    </a>
-                                    <a class="btn"
-                                        href=""
-                                        title={% trans 'Видалити' %}>
-                                        <span style="color: red;">
-                                            <i class="fa fa-trash"></i>
-                                        </span>
-                                    </a>
+                                <div class="dropup">
+                                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">Toggle Dropdown</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                        <li>
+                                            <a  href="{% url 'order_email' pk=order.pk %}">
+                                                <span style="color: purple;">
+                                                    <i class="fa fa-share-square-o"></i>
+                                                </span>
+                                                {% trans 'Відправити' %}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'order_detail' pk=order.pk %}">
+                                                <span style="color: blue;">
+                                                    <i class="fa fa-eye"></i>
+                                                </span>
+                                                {% trans 'Переглянути' %}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'order_update' pk=order.pk %}">
+                                                <span style="color: orange;">
+                                                    <i class="fa fa-edit"></i>
+                                                </span>
+                                                {% trans 'Редагувати' %}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'order_copy' pk=order.pk %}">
+                                                <span style="color: green;">
+                                                    <i class="fa fa-copy"></i>
+                                                </span>
+                                                {% trans 'Копіювати' %}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'order_delete' pk=order.pk %}">
+                                                <span style="color: red;">
+                                                    <i class="fa fa-trash"></i>
+                                                </span>
+                                                {% trans 'Видалити' %}
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </div>
                             </td>
                         </tr>
@@ -117,8 +128,7 @@
 
 {% block JS %}
     <!-- DataTable -->
-    <script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/datatables.min.js' %}"></script>
     <script>
         $(document).ready(function () {
             $('#example2').DataTable({
@@ -142,7 +152,7 @@
                 'ordering'    : true,
                 'info'        : true,
                 'autoWidth'   : false,
-                
+                'responsive'  : true
             })
         })
     </script>

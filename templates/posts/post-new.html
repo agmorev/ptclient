@@ -6,24 +6,20 @@
 {% load i18n %}
 {% load widget_tweaks %}
 
-{% block head %}
-    {{ form.media }}
-{% endblock head %}
-
 {% block pageheader %}
-  {% trans "Форум" %}
+    {% trans "Форум" %}
 {% endblock pageheader %}
 
 {% block content %}
     <div class="box box-success">
         <div class="box-header">
-            <h4 class="box-title">{% trans 'Нова публікація' %}</h4>
-            
+            <h4 class="box-title">{% trans 'Нова публікація' %}</h4>           
         </div>
         <div class="box-body">
             <div class="form-group">
                 <form enctype="multipart/form-data" method="post">
                     {% csrf_token %}
+                    {{ form.media }}
                     {% for hidden in form.hidden_fields %}
                         {{ hidden }}
                     {% endfor %}
@@ -65,7 +61,7 @@
                                 <img src="{% static 'dist/img/publication.jpg' %}" class="img-thumbnail">
                             {% endif %}
                         </div>
-                        <div class="col-sm-10">
+                        <div class="col-sm-11">
                             <div class="form-group">
                                 <div class="form-label-group">
                                     <b>{{ form.image.label_tag }}</b>

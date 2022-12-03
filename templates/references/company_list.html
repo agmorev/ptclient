@@ -9,14 +9,7 @@
 {% block CSS %}
     <link rel="stylesheet" href="{% static 'flags/sprite-hq.css' %}">
     <!-- DataTables -->
-    <link rel="stylesheet" href="{% static 'bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
-    <style>
-        @media only screen and (max-width: 900px) {
-            .one{
-                display: none;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'bower_components/datatables/datatables.min.css' %}">
 {% endblock CSS %}
 
 {% block pageheader %}
@@ -34,12 +27,12 @@
             <h3 class="box-title">{% trans "Перелік компаній" %}</h3>
             <div class="box-tools pull-right" data-toggle="tooltip" title="">
                 <div class="btn-group">
-                    <a class="btn btn-warning"
+                    <a class="btn"
                         href="{% url 'company_list' %}"
                         title={% trans 'Оновити' %}>
-                        <i class="fa fa-retweet"></i>
+                        <i class="fa fa-refresh"></i>
                     </a>
-                    <a class="btn btn-success"
+                    <a class="btn"
                         href="{% url 'company_create' %}"
                         title={% trans 'Створити' %}>
                         <i class="fa fa-plus"></i>
@@ -51,23 +44,23 @@
             <table id="example2" class="table table-bordered table-hover table-striped">
                 <thead>
                     <tr>
-                        <th>{% trans "Назва" %}</th>
-                        <th>{% trans "ЄДРПОУ" %}</th>
-                        <th class='one'>{% trans "ІПН" %}</th>
-                        <th class='one'>{% trans "Адреса" %}</th>
-                        <th class='one'>{% trans "Країна" %}</th>
-                        <th></th>
+                        <th data-priority="2">{% trans "Назва" %}</th>
+                        <th data-priority="3">{% trans "ЄДРПОУ" %}</th>
+                        <th>{% trans "ІПН" %}</th>
+                        <th>{% trans "Адреса" %}</th>
+                        <th>{% trans "Країна" %}</th>
+                        <th data-priority="1"></th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for company in companies %}
                         {% get_country company.country as country %}
-                        <tr>                           
+                        <tr>
                             <td>{{ company.name }}</td>
                             <td>{{ company.code }}</td>
-                            <td class='one'>{{ company.tax }}</td>
-                            <td class='one'>{{ company.address }}</td>
-                            <td class='one'><i class="{{ country.flag_css }}"></i></td>
+                            <td>{{ company.tax }}</td>
+                            <td>{{ company.address }}</td>
+                            <td><i class="{{ country.flag_css }}"></i></td>
                             <td>
                                 <div class="btn-group">
                                     <a class="btn"
@@ -96,8 +89,7 @@
 
 {% block JS %}
     <!-- DataTable -->
-    <script src="{% static 'bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+    <script src="{% static 'bower_components/datatables/datatables.min.js' %}"></script>
     <script>
         $(document).ready(function () {
             $('#example2').DataTable({
@@ -121,7 +113,7 @@
                 'ordering'    : true,
                 'info'        : true,
                 'autoWidth'   : false,
-                
+                'responsive'  : true
             })
         })
     </script>

@@ -17,7 +17,7 @@
         {% block CSS %}
         {% endblock CSS %}
     </head>
-    
+
     <body class="hold-transition skin-yellow-light sidebar-mini">
         <div class="wrapper">
             <!-- Main Header -->
@@ -33,17 +33,25 @@
                         <img src="{% static 'dist/img/logo_full_small.png' %}" alt='ПЕНТАДА-ТРАНС' width=120px/>
                     </span>
                 </a>
-                {% include 'navbar.html' %}                
+                {% include 'navbar.html' %}
             </header>
 
             {% include 'sidebar.html' %}
 
             <!-- Content Wrapper. Contains page content -->
             <div class="content-wrapper">
+                {% for message in messages %}
+					<div class="alert {{ message.tags }} alert-dismissible m-1" role="alert">
+						<button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close"%} ">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						{{ message }}
+					</div>
+				{% endfor %}
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        {% block pageheader %}                        
+                        {% block pageheader %}
                         {% endblock pageheader %}
                     </h1>
                     <ol class="breadcrumb">
@@ -54,13 +62,13 @@
                             </a>
                         </li>
                         {% block breadcrumb %}
-                        {% endblock breadcrumb %}    
+                        {% endblock breadcrumb %}
                     </ol>
                 </section>
 
                 <!-- Main content -->
                 <section class="content container-fluid">
-                    
+
                     {% block content %}
                     {% endblock content %}
 

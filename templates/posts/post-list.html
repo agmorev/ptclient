@@ -37,19 +37,19 @@
             <i class="fa fa-comments-o"></i>
             <h3 class="box-title">{% trans 'Перелік публікацій за темою ' %}"{{ topic }}"</h3>
             <div class="box-tools pull-right">
-                <a class="btn btn-sm"
+                <a class="btn"
                     href="{% url 'topic_list' %}"
                     role="button"
                     title={% trans 'Повернутись' %}>
                     <i class="fa fa-list"></i>
                 </a>
-                <a class="btn btn-sm"
+                <a class="btn"
                     href="{{ topic.get_absolute_url }}"
                     role="button"
                     title={% trans 'Оновити' %}>
                     <i class="fa fa-refresh"></i>
                 </a>
-                <a class="btn btn-sm"
+                <a class="btn"
                     href="{% url 'post_new' topic.id %}"
                     role="button"
                     title={% trans 'Створити' %}>
@@ -61,7 +61,7 @@
             <table id="example2" class="table table-bordered table-hover table-striped table-condensed">
                 <thead>                  
                     <tr>
-                        <th class="one"></th>
+                        <th></th>
                         <th>{% trans "Назва" %}</th>
                         <th class="one">{% trans "Автор" %}</th>
                         <th class="one">{% trans "Рейтинг" %}</th>
@@ -72,7 +72,7 @@
                 <tbody>
                     {% for post in object_list %}
                         <tr>                           
-                            <td class="one">                            
+                            <td>                           
                                 {% if post.image %}
                                     <img src="{{ post.image.url }}" class="img-circle img-md" alt="">
                                 {% else %}
@@ -89,7 +89,7 @@
                                             </span>
                                         </div>
                                     </li>
-                                </ul>                                
+                                </ul>                               
                             </td>
                             <td class="one">
                                 {% with user=post.author %}
@@ -137,24 +137,30 @@
                             <td class="one">{{ post.created|date:"d.m.Y H:i" }}</td>
                             <td>
                                 <div class="btn-group">                                    
-                                    <a class="btn btn-info btn-sm"
+                                    <a class="btn"
                                         href="{% url 'post_detail' pk=post.pk topic=post.topic_id %}"
                                         role="button"
-                                        title={% trans 'Перегляд' %}>
-                                        <i class="fa fa-eye"></i>
+                                        title={% trans 'Переглянути' %}>
+                                        <span style="color: blue;">
+                                            <i class="fa fa-eye"></i>
+                                        </span>
                                     </a>
                                     {% if user.is_authenticated and user.username == post.author.username %}
-                                        <a class="btn btn-success btn-sm"
+                                        <a class="btn"
                                             href="{% url 'post_edit' pk=post.pk topic=post.topic_id %}"
                                             role="button"
                                             title={% trans 'Редагувати' %}>
-                                            <i class="fa fa-edit"></i>
+                                            <span style="color: green;">
+                                                <i class="fa fa-edit"></i>
+                                            </span>
                                         </a>
-                                        <a class="btn btn-danger btn-sm"
+                                        <a class="btn"
                                             href="{% url 'post_delete' post.pk %}"
                                             role="button"
                                             title={% trans 'Видалити' %}>
-                                            <i class="fa fa-trash"></i>
+                                            <span style="color: red;">
+                                                <i class="fa fa-trash"></i>
+                                            </span>
                                         </a>    
                                     {% endif %}
                                 </div>                                

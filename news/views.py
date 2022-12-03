@@ -18,14 +18,17 @@ class NewsListView(ListView):
         news = []
 
         for src in News.objects.all():
-            publisher = src.publisher
             url = src.rss_url
             fdate = src.date_format
-            posts = feedparser.parse(url)
             author_title = src.publisher
             tags = src.tags
-
             query_srch = tags.split()
+
+            try:
+                posts = feedparser.parse(url)
+            except Exception as err:
+                print(err)
+                continue
 
             for post in posts['entries']:
                 if query_srch:
@@ -74,14 +77,17 @@ class LawsListView(ListView):
         laws = []
 
         for src in Laws.objects.all():
-            publisher = src.publisher
             url = src.rss_url
             fdate = src.date_format
-            posts = feedparser.parse(url)
             author_title = src.publisher
             tags = src.tags
-
             query_srch = tags.split()
+
+            try:
+                posts = feedparser.parse(url)
+            except Exception as err:
+                print(err)
+                continue
 
             for post in posts['entries']:
                 if query_srch:
@@ -118,4 +124,3 @@ class LawsListView(ListView):
                                  link, author_title, image, ])
 
         return sorted(laws, key=lambda new: datetime.datetime.strptime(new[0], '%d.%m.%Y %H:%M'), reverse=True)
-    
